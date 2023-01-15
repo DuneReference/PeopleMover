@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_Res_AdvancedHydroponics"
+                or defName = "VFE_Res_Sprinkler"
+                or defName = "VFE_Res_FarmingTechniques"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_Res_AdvancedHydroponics"
+                or defName = "VFE_Res_Sprinkler"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Composites"
+                or defName = "DuneRef_Shields"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_AdvancedHydroponics</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Industrialization"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_Sprinkler</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Irrigation"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_FarmingTechniques</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <!-- Special conditional tab edit since all their techs in various mods are in the same tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+        <match Class="PatchOperationConditional">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.HiddenTab"]</xpath>
+            <nomatch Class="PatchOperationAdd">
+                <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+                <value>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </value>
+            </nomatch>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]</xpath>
+            <value>
+                <modExtensions>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </modExtensions>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_PlanterBox"
+                or defName = "VFE_PlanterBox_Tilable"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

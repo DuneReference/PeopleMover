@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- remove tags with faction start info so we can apply the start info to new techs that contain this one -->
+    <!-- didn't put in the HeavyTurrets research for CE for now -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Batteries"
+                or defName = "BiofuelRefining"
+                or defName = "SolarPanels"
+                or defName = "PackagedSurvivalMeal"
+                or defName = "Machining"
+                or defName = "Gunsmithing"
+                or defName = "BlowbackOperation"
+                or defName = "GasOperation"
+                or defName = "GunTurrets"
+                or defName = "TransportPod"
+            ]/tags/li[text()="MercenaryStart"]
+        </xpath>
+    </Operation>
+
+    <!-- add tags with faction start info to the cooresponding new ResearchProjectDefs so we can auto-unlock those at the start -->
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Rifling"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Rifling"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Rifling"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Electronics"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Electronics"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Electronics"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Flight"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Flight"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Flight"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Ecology"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Ecology"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Ecology"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_SyntheticMaterials"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_SyntheticMaterials"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_SyntheticMaterials"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_BrutalWarfare"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_BrutalWarfare"]/tags</xpath>
+            <value>
+                <li>MercenaryStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_BrutalWarfare"]</xpath>
+            <value>
+                <tags>
+                    <li>MercenaryStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEI_SonicInfestationRepeller"
+            ]
+        </xpath>
+        <value>
+            <designationCategory>Security</designationCategory>
+            <constructionSkillPrerequisite>10</constructionSkillPrerequisite>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_AdvancedShields</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_Gun_Plasmacutter"
+                or defName = "VFE_Gun_Plasmapiercer"
+                or defName = "VFE_Gun_PlasmabeamRifle"
+                or defName = "VFE_Gun_PlasmaScattergun"
+                or defName = "VFE_Plasmasaw"
+            ]
+        </xpath>
+        <value>
+            <recipeMaker>
+			    <researchPrerequisite Inherit='False'>DuneRef_AdvancedShields</researchPrerequisite>
+            </recipeMaker>
+        </value>
+    </Operation>
+
+</Patch>  

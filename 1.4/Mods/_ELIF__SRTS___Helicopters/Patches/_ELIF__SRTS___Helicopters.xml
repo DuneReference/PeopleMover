@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Research_MH-6LB_Transport"
+                or defName = "Research_MH-6LB_Attack"
+                or defName = "Research_UH-1Y_Transport"
+                or defName = "Research_UH-1Y_Attack"
+                or defName = "Research_UH-60_Transport"
+                or defName = "Research_UH-60_Attack"
+                or defName = "Research_AH-1Z_Attack"
+                or defName = "Research_CH-46E_Transport"
+                or defName = "Research_AW109_Transport"
+                or defName = "Research_V-22_Transport"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Research_MH-6LB_Transport"
+                or defName = "Research_MH-6LB_Attack"
+                or defName = "Research_UH-1Y_Transport"
+                or defName = "Research_UH-1Y_Attack"
+                or defName = "Research_UH-60_Transport"
+                or defName = "Research_UH-60_Attack"
+                or defName = "Research_AH-1Z_Attack"
+                or defName = "Research_CH-46E_Transport"
+                or defName = "Research_AW109_Transport"
+                or defName = "Research_V-22_Transport"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Flight"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>Research_MH-6LB_Transport</li>
+            <li>Research_MH-6LB_Attack</li>
+            <li>Research_UH-1Y_Transport</li>
+            <li>Research_UH-1Y_Attack</li>
+            <li>Research_UH-60_Transport</li>
+            <li>Research_UH-60_Attack</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Rocketry"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>Research_AH-1Z_Attack</li>
+            <li>Research_CH-46E_Transport</li>
+            <li>Research_AW109_Transport</li>
+            <li>Research_V-22_Transport</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "ELIF_ResearchHelicopters"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+</Patch>

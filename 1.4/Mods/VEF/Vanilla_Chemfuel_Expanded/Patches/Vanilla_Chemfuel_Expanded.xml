@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VCHE_ChemfuelPipe"
+                or defName = "VCHE_UndergroundChemfuelPipe"
+                or defName = "VCHE_ChemfuelValve"
+                or defName = "PS_ChemfuelTank"
+                or defName = "VCHE_ChemfuelTap"
+                or defName = "VCHE_ChemfuelDrain"
+                or defName = "VCHE_DeepchemPipe"
+                or defName = "VCHE_UndergroundDeepchemPipe"
+                or defName = "VCHE_DeepchemValve"
+                or defName = "PS_DeepchemTank"
+                or defName = "PS_DeepchemRefinery"
+                or defName = "VCHE_DeepchemPumpjack"
+                or defName = "VCHE_DeepchemTap"
+                or defName = "VCHE_DeepchemDrain"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Refining</li>
+                <li>DuneRef_Radio</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VPE_EltexGear"
+                or defName = "VPE_CasterGear"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VPE_EltexGear"
+                or defName = "VPE_CasterGear"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Composites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VPE_EltexGear</li>
+            <li>VPE_CasterGear</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <!-- Special conditional tab edit since all their techs in various mods are in the same tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+        <match Class="PatchOperationConditional">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.HiddenTab"]</xpath>
+            <nomatch Class="PatchOperationAdd">
+                <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+                <value>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </value>
+            </nomatch>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]</xpath>
+            <value>
+                <modExtensions>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </modExtensions>
+            </value>
+        </nomatch>
+    </Operation>
+
+</Patch>

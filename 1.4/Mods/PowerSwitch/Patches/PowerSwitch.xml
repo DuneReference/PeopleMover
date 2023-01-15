@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ResearchAutoEnemySwitch"
+                or defName = "ResearchAutoPowerSwitch"
+                or defName = "ResearchPowerConduitsInvisible"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ResearchAutoEnemySwitch"
+                or defName = "ResearchAutoPowerSwitch"
+                or defName = "ResearchPowerConduitsInvisible"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Telecommunications"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ResearchAutoEnemySwitch</li>
+            <li>ResearchPowerConduitsInvisible</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Radio"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ResearchAutoPowerSwitch</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "Miscellaneous"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+</Patch>

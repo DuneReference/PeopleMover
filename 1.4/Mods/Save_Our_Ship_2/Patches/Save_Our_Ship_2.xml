@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   @Name = "ArchotechResearchProjectBase"
+                or defName = "SoSJTDrive"
+                or defName = "ShipSensorClusterAdv"
+                or defName = "ShipPilotSeat"
+                or defName = "ShipShuttleBay"
+                or defName = "ShipLifeSupport"
+                or defName = "ShipSpaceSuits"
+                or defName = "ShipSpaceSuitsHeavy"
+                or defName = "Crittersleep"
+                or defName = "ShipCapacitor"
+                or defName = "ShuttlePersonal"
+                or defName = "ShuttleCargo"
+                or defName = "ShuttleHeavy"
+                or defName = "ShuttleDropship"
+                or defName = "ShipSalvageBay"
+                or defName = "ShipTurretLaser"
+                or defName = "ShipTurretPlasma"
+                or defName = "ShipTurretKinetic"
+                or defName = "ShipHeatsink"
+                or defName = "ShipTurretMedium"
+                or defName = "ShipShields"
+                or defName = "ShipTurretLarge"
+                or defName = "ShipTorpedoes"
+                or defName = "ShipTurretAC"
+                or defName = "HullFoam"
+                or defName = "ShipCloaking"
+                or defName = "Holodeck_Basic"
+                or defName = "Holodeck_Standard"
+                or defName = "Holodeck_AI"
+                or defName = "ShipAdvRadiator"
+                or defName = "ShipHeatManifold"
+                or defName = "ShipAvatarCasket"
+                or defName = "ShipAIHologram"
+                or defName = "ShipHologramRepeater"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ArchotechBioMechanites"
+                or defName = "ArchotechBioMechanitesTwo"
+                or defName = "SoSArchotechOrgans"
+                or defName = "ArchotechAnimals"
+                or defName = "ArchotechPlants"
+                or defName = "ArchotechMechaniteWeapon"
+                or defName = "ArchotechHullConversion"
+                or defName = "ArchotechPsychicField"
+                or defName = "ArchotechPsychicManipulation"
+                or defName = "ArchotechBroadManipulation"
+                or defName = "ArchotechPsylink"
+                or defName = "ArchotechPsychicEffectors"
+                or defName = "ArchotechPsychicWeapon"
+                or defName = "ArchotechVanometrics"
+                or defName = "ArchotechShields"
+                or defName = "ArchotechHeatsink"
+                or defName = "SoSJTDrive"
+                or defName = "ShipSensorClusterAdv"
+                or defName = "ShipPilotSeat"
+                or defName = "ShipShuttleBay"
+                or defName = "ShipLifeSupport"
+                or defName = "ShipSpaceSuits"
+                or defName = "ShipSpaceSuitsHeavy"
+                or defName = "Crittersleep"
+                or defName = "ShipCapacitor"
+                or defName = "ShuttlePersonal"
+                or defName = "ShuttleCargo"
+                or defName = "ShuttleHeavy"
+                or defName = "ShuttleDropship"
+                or defName = "ShipSalvageBay"
+                or defName = "ShipTurretLaser"
+                or defName = "ShipTurretPlasma"
+                or defName = "ShipTurretKinetic"
+                or defName = "ShipHeatsink"
+                or defName = "ShipTurretMedium"
+                or defName = "ShipShields"
+                or defName = "ShipTurretLarge"
+                or defName = "ShipTorpedoes"
+                or defName = "ShipTurretAC"
+                or defName = "HullFoam"
+                or defName = "ShipCloaking"
+                or defName = "Holodeck_Basic"
+                or defName = "Holodeck_Standard"
+                or defName = "Holodeck_AI"
+                or defName = "ShipAdvRadiator"
+                or defName = "ShipHeatManifold"
+                or defName = "ShipAvatarCasket"
+                or defName = "ShipAIHologram"
+                or defName = "ShipHologramRepeater"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SwarmIntelligence"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ArchotechMechanites</li>
+            <li>ArchotechBioMechanites</li>
+            <li>ArchotechBioMechanitesTwo</li>
+            <li>ArchotechMechaniteWeapon</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_UnseenGrasp"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>SoSArchotechOrgans</li>
+            <li>ArchotechAnimals</li>
+            <li>ArchotechPlants</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Nanites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ArchotechHullConversion</li>
+            <li>ArchotechExotics</li>
+            <li>ArchotechVanometrics</li>
+            <li>ArchotechShields</li>
+            <li>ArchotechHeatsink</li>
+            <li>ArchotechAntimatter</li>
+            <li>ArchotechEngine</li>
+            <li>ArchotechReactor</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SwarmIntelligence"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ArchotechPsychicField</li>
+            <li>ArchotechPsychicManipulation</li>
+            <li>ArchotechBroadManipulation</li>
+            <li>ArchotechPsylink</li>
+            <li>ArchotechPsychicEffectors</li>
+            <li>ArchotechPsychicWeapon</li>
+            <li>ArchotechPillarA</li>
+            <li>ArchotechPillarB</li>
+            <li>ArchotechPillarC</li>
+            <li>ArchotechPillarD</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SpaceTechnology"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>SoSJTDrive</li>
+            <li>ShipSensorClusterAdv</li>
+            <li>ShipShuttleBay</li>
+            <li>ShipSpaceSuitsHeavy</li>
+            <li>ShuttleDropship</li>
+            <li>ShipSalvageBay</li>
+            <li>ShipTurretLaser</li>
+            <li>ShipTurretPlasma</li>
+            <li>ShipTurretKinetic</li>
+            <li>ShipTurretMedium</li>
+            <li>ShipTurretLarge</li>
+            <li>ShipCloaking</li>
+            <li>ShipAdvRadiator</li>
+            <li>ShipHeatManifold</li>
+            <li>ShipAvatarCasket</li>
+            <li>ShipAIHologram</li>
+            <li>ShipHologramRepeater</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_OffworldMissions"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ShipPilotSeat</li>
+            <li>ShipLifeSupport</li>
+            <li>ShipSpaceSuits</li>
+            <li>Crittersleep</li>
+            <li>ShipCapacitor</li>
+            <li>ShuttlePersonal</li>
+            <li>ShuttleCargo</li>
+            <li>ShuttleHeavy</li>
+            <li>ShipHeatsink</li>
+            <li>ShipShields</li>
+            <li>ShipTorpedoes</li>
+            <li>ShipTurretAC</li>
+            <li>HullFoam</li>
+            <li>Holodeck_Standard</li>
+            <li>Holodeck_AI</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedAI"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>Holodeck_Basic</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[
+                   defName = "ResearchTabShip"
+                or defName = "ResearchTabArchotech"
+            ]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "TelescopeSpace"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Rocketry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_Res_Obelisk"
+                or defName = "VFE_Res_Pottery"
+                or defName = "VFE_Res_WallCarvings"
+                or defName = "VFE_Res_ArtfulDisplay"
+                or defName = "VFE_Res_Statues"
+                or defName = "VFE_Res_Monuments"
+                or defName = "VFE_Res_Rugs"
+                or defName = "VFE_Res_Wallpapers"
+                or defName = "VFE_Res_Holograms"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_Res_Holograms"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Masonry"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_Obelisk</li>
+            <li>VFE_Res_WallCarvings</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Pottery"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_Pottery</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Construction"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_ArtfulDisplay</li>
+            <li>VFE_Res_Statues</li>
+            <li>VFE_Res_Monuments</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Currency"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_Rugs</li>
+            <li>VFE_Res_Wallpapers</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedAI"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_Res_Holograms</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <!-- Special conditional tab edit since all their techs in various mods are in the same tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+        <match Class="PatchOperationConditional">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.HiddenTab"]</xpath>
+            <nomatch Class="PatchOperationAdd">
+                <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+                <value>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </value>
+            </nomatch>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]</xpath>
+            <value>
+                <modExtensions>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </modExtensions>
+            </value>
+        </nomatch>
+    </Operation>
+
+</Patch>

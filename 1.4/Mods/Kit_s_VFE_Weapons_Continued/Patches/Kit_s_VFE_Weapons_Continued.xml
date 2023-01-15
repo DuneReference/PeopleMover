@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "KIT_CryptoHammer"
+                or defName = "KIT_CryptoKnife"
+                or defName = "KIT_CryptoSpear"
+                or defName = "KIT_CryptoSword"
+                or defName = "KIT_Gun_PlasmaPistol"
+                or defName = "KIT_Gun_PlasmaRifle"
+                or defName = "KIT_Gun_PlasmaSMG"
+                or defName = "KIT_Gun_PlasmaSniper"
+            ]
+        </xpath>
+        <value>
+            <recipeMaker>
+			    <researchPrerequisite Inherit='False'>DuneRef_AdvancedShields</researchPrerequisite>
+            </recipeMaker>
+        </value>
+    </Operation>
+
+</Patch>

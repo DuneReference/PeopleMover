@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_FactoryBasics"
+                or defName = "VFE_ElectronicsFabricationFactory"
+                or defName = "VFE_MasonryandMetallicsFactory"
+                or defName = "VFE_MunitionsandArmamentsFactory"
+                or defName = "VFE_WearablesandTextilesFactory"
+                or defName = "VFE_ProvisionsPackagingFactory"
+                or defName = "VFE_MedicinalCompoundingFactory"
+                or defName = "VFE_BasicDroneAssembly"
+                or defName = "VFE_AutomatedDefensiveMeasures"
+                or defName = "VFE_MechanoidStructures"
+                or defName = "VFE_AdvancedDroneAssembly"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFE_FactoryBasics"
+                or defName = "VFE_ElectronicsFabricationFactory"
+                or defName = "VFE_MasonryandMetallicsFactory"
+                or defName = "VFE_MunitionsandArmamentsFactory"
+                or defName = "VFE_WearablesandTextilesFactory"
+                or defName = "VFE_ProvisionsPackagingFactory"
+                or defName = "VFE_MedicinalCompoundingFactory"
+                or defName = "VFE_BasicDroneAssembly"
+                or defName = "VFE_AutomatedDefensiveMeasures"
+                or defName = "VFE_MechanoidStructures"
+                or defName = "VFE_AdvancedDroneAssembly"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Computers"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_ProvisionsPackagingFactory</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Robotics"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_FactoryBasics</li>
+            <li>VFE_ElectronicsFabricationFactory</li>
+            <li>VFE_MasonryandMetallicsFactory</li>
+            <li>VFE_MunitionsandArmamentsFactory</li>
+            <li>VFE_WearablesandTextilesFactory</li>
+            <li>VFE_MedicinalCompoundingFactory</li>
+            <li>VFE_AutomatedDefensiveMeasures</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedAI"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_BasicDroneAssembly</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Mechanites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_MechanoidStructures</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SmartMaterials"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFE_AdvancedDroneAssembly</li>
+        </value>
+    </Operation>
+
+    <!-- Conditional Patches -->
+
+    <!-- Vanilla Coffees And Teas Expanded -->
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Brewing Expanded - Coffees and Teas</li>
+		</mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_IndustrialRoasting"
+                ]/tab
+            </xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Brewing Expanded - Coffees and Teas</li>
+		</mods>
+        <match Class="PatchOperationRemove">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_IndustrialRoasting"
+                ]/prerequisites
+            </xpath>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Brewing Expanded - Coffees and Teas</li>
+		</mods>
+        <match Class="PatchOperationAdd">
+            <xpath>
+                Defs/ResearchProjectDef[
+                    defName = "DuneRef_Computers"
+                ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+            </xpath>
+            <value>
+                <li>VFE_IndustrialRoasting</li>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- Vanilla Cooking Expanded -->
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Cooking Expanded</li>
+		</mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_CheeseMaking"
+                    or defName = "VFE_IndustrialSoups"
+                ]/tab
+            </xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Cooking Expanded</li>
+		</mods>
+        <match Class="PatchOperationRemove">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_CheeseMaking"
+                    or defName = "VFE_IndustrialSoups"
+                ]/prerequisites
+            </xpath>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Cooking Expanded</li>
+		</mods>
+        <match Class="PatchOperationAdd">
+            <xpath>
+                Defs/ResearchProjectDef[
+                    defName = "DuneRef_Computers"
+                ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+            </xpath>
+            <value>
+                <li>VFE_CheeseMaking</li>
+                <li>VFE_IndustrialSoups</li>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- Vanilla Factions Expanded Vikings -->
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Factions Expanded - Vikings</li>
+		</mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_IndustrialBeekeeping"
+                ]/tab
+            </xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Factions Expanded - Vikings</li>
+		</mods>
+        <match Class="PatchOperationRemove">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_IndustrialBeekeeping"
+                ]/prerequisites
+            </xpath>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Factions Expanded - Vikings</li>
+		</mods>
+        <match Class="PatchOperationAdd">
+            <xpath>
+                Defs/ResearchProjectDef[
+                    defName = "DuneRef_Computers"
+                ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+            </xpath>
+            <value>
+                <li>VFE_IndustrialBeekeeping</li>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- Vanilla Fishing Expanded -->
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Fishing Expanded</li>
+		</mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_Aquaponics"
+                ]/tab
+            </xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Fishing Expanded</li>
+		</mods>
+        <match Class="PatchOperationRemove">
+            <xpath>
+                Defs/ResearchProjectDef[
+                       defName = "VFE_Aquaponics"
+                ]/prerequisites
+            </xpath>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Fishing Expanded</li>
+		</mods>
+        <match Class="PatchOperationAdd">
+            <xpath>
+                Defs/ResearchProjectDef[
+                    defName = "DuneRef_Computers"
+                ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+            </xpath>
+            <value>
+                <li>VFE_Aquaponics</li>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <!-- Special conditional tab edit since all their techs in various mods are in the same tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+        <match Class="PatchOperationConditional">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.HiddenTab"]</xpath>
+            <nomatch Class="PatchOperationAdd">
+                <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+                <value>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </value>
+            </nomatch>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]</xpath>
+            <value>
+                <modExtensions>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </modExtensions>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/TerrainDef[
+                   defName = "VFE_FactoryFloor"
+                or defName = "VFE_FactoryPath"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Industrialization</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_HeavyHopper"
+                or defName = "VFE_ConduitPylon"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MunitionsAndArmamentFactory_ChemfuelClarifier"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+                <li>DuneRef_Chemistry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MasonryAndMetallicsFactory_MasonrySaw"
+                or defName = "VFE_Mechanoids_Autosower"
+                or defName = "VFE_Mechanoids_Autoharvester"
+                or defName = "VFEM_ElectronicsFabricationFactory_SteelExtractor"
+                or defName = "VFEM_ElectronicsFabricationFactory_ComponentAssembler"
+                or defName = "VFEM_WearablesAndTextileFactory_TextileRecycler"
+                or defName = "VFEM_WearablesAndTextileFactory_AutoLoom"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MedicinalCompoundingFactory_DrugPowderizer"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_Sanitation</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MasonryAndMetallicsFactory_AutomaticDrill"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_Radio</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MedicinalCompoundingFactory_MedicineGranulator"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_Medicine</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MasonryAndMetallicsFactory_PlasteelForge"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_Composites</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_LongRangeMissileLauncher"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Rocketry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_VersatileAssembler"
+                or defName = "VFEM_MunitionsAndArmamentFactory_ArtilleryFoundry"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MunitionsAndArmamentFactory_MechanizedWeaponsmith"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+                <li>DuneRef_BrutalWarfare</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_WearablesAndTextileFactory_SynthreadSynthesizer"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+                <li>DuneRef_SyntheticMaterials</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFEM_MedicinalCompoundingFactory_NeutroamineInfuser"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_SyntheticMaterials</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_Supercomputer"
+                or defName = "VFE_IndoctrinationPod"
+                or defName = "VFEM_Autocrane"
+                or defName = "VFE_Mechanoids_RiotBase"
+                or defName = "VFE_Mechanoids_AutobroadcasterBase"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_AdvancedAI</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_Mechanoids_CombatBase"
+                or defName = "VFE_Mechanoids_TurretBase"
+                or defName = "VFE_Mechanoids_PyroBase"
+                or defName = "VFE_Mechanoids_RaiderBase"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_AdvancedAI</li>
+                <li>DuneRef_BrutalWarfare</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_Mechanoids_AutoMedicBase"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_AdvancedAI</li>
+                <li>DuneRef_Medicine</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_MechanoidLiquidFreezer"
+                or defName = "VFE_MechaniteLFReinforcer"
+                or defName = "VFE_BlightAutoRepeller"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Mechanites</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VFE_MechanitePants"
+                or defName = "VFE_MechaniteUnderArmor"
+            ]/recipeMaker/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Mechanites</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

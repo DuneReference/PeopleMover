@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   @Name = "PRF_CultivatorResearch"
+                or @Name = "PRF_AnimalStationResearch"
+                or @Name = "PRF_AssemblersResearch"
+                or @Name = "PRF_BatteriesResearch"
+                or @Name = "PRF_CommonResearch"
+                or @Name = "PRF_BeltsResearch"
+                or @Name = "PRF_DroneResearch"
+                or @Name = "PRF_MiningResearch"
+                or @Name = "PRF_SALResearch"
+                or @Name = "PRF_StorageResearch"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "PRF_AutomaticFarmingI"
+                or defName = "PRF_AnimalStations"
+                or defName = "PRF_AutomaticFarmingII"
+                or defName = "PRF_AnimalStationsII"
+                or defName = "PRF_AutomaticFarmingIII"
+                or defName = "PRF_AnimalStationsIII"
+                or defName = "PRF_SelfCooking"
+                or defName = "PRF_SelfCookingII"
+                or defName = "PRF_MetalRefining"
+                or defName = "PRF_MachineLearning"
+                or defName = "PRF_MagneticTape"
+                or defName = "PRF_UniversalAutocrafting"
+                or defName = "PRF_SelfCorrectingAssemblers"
+                or defName = "PRF_SelfCorrectingAssemblersII"
+                or defName = "PRF_EnhancedBatteries"
+                or defName = "PRF_LargeBatteries"
+                or defName = "PRF_VeryLargeBatteries"
+                or defName = "PRF_CoreTierO"
+                or defName = "PRF_CoreTierI"
+                or defName = "PRF_CoreTierII"
+                or defName = "PRF_CoreTierIII"
+                or defName = "PRF_CoreTierIV"
+                or defName = "PRF_BeltsI"
+                or defName = "PRF_BeltsII"
+                or defName = "PRF_BeltsIII"
+                or defName = "PRF_BasicDrones"
+                or defName = "PRF_ImprovedDrones"
+                or defName = "PRF_AdvancedDrones"
+                or defName = "PRF_AutonomousMining"
+                or defName = "PRF_AutonomousMiningII"
+                or defName = "PRF_AutonomousMiningIII"
+                or defName = "PRF_SALResearchI"
+                or defName = "PRF_SALResearchII"
+                or defName = "PRF_SALResearchIII"
+                or defName = "PRF_SALResearchIV"
+                or defName = "PRF_SALResearchV"
+                or defName = "PRF_SALResearchVII"
+                or defName = "PRF_SALResearchVI"
+                or defName = "PRF_SALResearchVIII"
+                or defName = "PRF_SALGodlyCrafting"
+                or defName = "PRF_Crates"
+                or defName = "PRF_SteelCrates"
+                or defName = "PRF_StorageIO"
+                or defName = "PRF_StorageIO_II"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedAI"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_AutomaticFarmingI</li>
+            <li>PRF_AnimalStations</li>
+            <li>PRF_AnimalStationsII</li>
+            <li>PRF_SelfCooking</li>
+            <li>PRF_SelfCookingII</li>
+            <li>PRF_AutomaticFarmingII</li>
+            <li>PRF_MachineLearning</li>
+            <li>PRF_CoreTierII</li>
+            <li>PRF_BeltsIII</li>
+            <li>PRF_AutonomousMining</li>
+            <li>PRF_AutonomousMiningII</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_PredictiveSystems"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_AutomaticFarmingIII</li>
+            <li>PRF_AnimalStationsIII</li>
+            <li>PRF_SelfCorrectingAssemblers</li>
+            <li>PRF_CoreTierIII</li>
+            <li>PRF_SALResearchIII</li>
+            <li>PRF_SALResearchIV</li>
+            <li>PRF_SALResearchVII</li>
+            <li>PRF_SALResearchVI</li>
+            <li>PRF_SALResearchVIII</li>
+            <li>PRF_StorageIO</li>
+            <li>PRF_StorageIO_II</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Composites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_MetalRefining</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Computers"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_MagneticTape</li>
+            <li>PRF_CoreTierI</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Robotics"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_UniversalAutocrafting</li>
+            <li>PRF_BasicDrones</li>
+            <li>PRF_ImprovedDrones</li>
+            <li>PRF_SALResearchI</li>
+            <li>PRF_SALResearchII</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_QuantumIndustry"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_SelfCorrectingAssemblersII</li>
+            <li>PRF_CoreTierIV</li>
+            <li>PRF_SALResearchV</li>
+            <li>PRF_SALGodlyCrafting</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Electronics"
+                or defName = "DuneRef_SyntheticMaterials"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_EnhancedBatteries</li>
+            <li>PRF_LargeBatteries</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedPowerCells"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_VeryLargeBatteries</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Industrialization"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_CoreTierO</li>
+            <li>PRF_SteelCrates</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_ReplaceableParts"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_BeltsI</li>
+            <li>PRF_BeltsII</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SmartMaterials"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_AdvancedDrones</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedLasers"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_AutonomousMiningIII</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Woodworking"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>PRF_Crates</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "Automation"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/TerrainDef[
+                   @Name = "PRF_ConcreteFloorBase"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Industrialization</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_DeepQuarry_mkI"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Industrialization</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_FermentingBarrel"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_FurnaceII"
+                or defName = "PRF_SimplePuller_I"
+                or defName = "PRF_Conveyor_Simple_II"
+                or defName = "PRF_Conveyor_Wall_I"
+                or defName = "PRF_Conveyor_UG_I"
+                or defName = "PRF_ItemSlide"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_Conveyor_Simple_I"
+                or defName = "PRF_Conveyor_Connector_To_UG"
+                or defName = "PRF_Conveyor_Connector_To_Floor"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_StoneWorks"
+                or defName = "TableRoboticMachining"
+                or defName = "PRF_RecipeDatabase"
+                or defName = "PRF_SelfCookerI"
+                or defName = "PRF_MeatGrinder"
+                or defName = "PRF_SelfPrepper"
+                or defName = "PRF_Sprinkler_I"
+                or defName = "PRF_Recycler"
+                or defName = "PRF_MetalRefinery"
+                or defName = "PRF_PartAssembler"
+                or defName = "PRF_FurnaceII"
+                or defName = "PRF_FuelingMachine"
+                or defName = "PRF_SmartHopper"
+                or defName = "PRF_Conveyor_Simple_III"
+                or defName = "PRF_DeepQuarry_mkII"
+                or defName = "PRF_ResearchTerminal"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>FishIndustry</li>
+			<li>Fishing Nets</li>
+			<li>[RF] Fishing</li>
+			<li>Thanks For All The Fish</li>
+			<li>Vanilla Fishing Expanded</li>
+		</mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ThingDef[
+                       defName = "PRF_T1_Aquaculture"
+                    or defName = "PRF_T2_Aquaculture"
+                ]/researchPrerequisites
+            </xpath>
+            <value>
+                <researchPrerequisites Inherit="False">
+                    <li>DuneRef_Computers</li>
+                </researchPrerequisites>
+            </value>
+        </match>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_TypeOneAssembler_I"
+                or defName = "PRF_SelfCookerII"
+                or defName = "PRF_DroneCultivator_I"
+                or defName = "PRF_OldTypeCultivator_I"
+                or defName = "PRF_OldTypeCultivator_Sun"
+                or defName = "PRF_OldTypeCultivator_Xl"
+                or defName = "PRF_FurnaceIII"
+                or defName = "PRF_GrowzonePuller_I"
+                or defName = "PRF_SimplePuller_II_Side"
+                or defName = "PRF_Conveyor_Splitter_I"
+                or defName = "PRF_Conveyor_Splitter_Wall"
+                or defName = "PRF_Conveyor_Splitter_UG"
+                or defName = "PRF_OverclockedAutoAssembler"
+                or defName = "PRF_SALAutoMinerI"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_SimplePuller_II"
+                or defName = "PRF_SimplePuller_II_Wall"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_SALAutoMinerI"
+                or defName = "PRF_GenericAnimalHarvester_II"
+                or defName = "PRF_OverclockedAutoAssemblerII"
+                or defName = "PRF_IOPort_I"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_PredictiveSystems</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_SunWallLight"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+                <li>DuneRef_Ecology</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_Slaughterhouse"
+                or defName = "PRF_TypeTwoAssembler_I"
+                or defName = "PRF_SelfCookerIII"
+                or defName = "PRF_SALAutoCooker"
+                or defName = "PRF_Sprinkler_II"
+                or defName = "PRF_MrTsArtMachine"
+                or defName = "PRF_AutoCrafter"
+                or defName = "PRF_TheArtMachine"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_AdvancedAI</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "PRF_BillTypeMiner_I"
+                or defName = "PRF_TheArtMaster"
+                or defName = "PRF_ColdStorageUnit_I"
+                or defName = "PRF_ColdStorageUnit_I"
+                or defName = "PRF_IOPPusher_I"
+                or defName = "PRF_IOPort_II"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_QuantumIndustry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Simple Utilities: Fridge</li>
+        </mods>
+        <nomatch Class="PatchOperationFindMod">
+            <mods>
+                <li>[KV] RimFridge - 1.1</li>
+                <li>[KV] RimFridge</li>
+            </mods>
+            <match Class="PatchOperationReplace">
+                <xpath>
+                    Defs/ThingDef[
+                        defName = "PRF_IOPort_IFridge"
+                        or defName = "PRFCoolDSU"
+                    ]/researchPrerequisites
+                </xpath>
+                <value>
+                    <researchPrerequisites Inherit="False">
+                        <li>DuneRef_QuantumIndustry</li>
+                    </researchPrerequisites>
+                </value>
+            </match>
+        </nomatch>
+    </Operation>
+
+</Patch>

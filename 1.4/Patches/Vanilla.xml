@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Hide old techs & Remove prerequisites -->
+
+    <!-- Neolithic -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "TreeSowing"
+                or defName = "Cocoa"
+                or defName = "Devilstrand"
+                or defName = "PsychoidBrewing"
+                or defName = "Brewing"
+                or defName = "PassiveCooler"
+                or defName = "Pemmican"
+                or defName = "RecurveBow"
+            ]
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Cocoa"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- remove tags with faction start info so we can apply the start info to new techs that contain this one -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "PsychoidBrewing"
+                or defName = "TreeSowing"
+                or defName = "PassiveCooler"
+                or defName = "Pemmican"
+                or defName = "RecurveBow"
+            ]/tags/li[text()="TribalStart"]
+        </xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "PassiveCooler"
+            ]/tags/li[text()="ClassicStart"]
+        </xpath>
+    </Operation>
+
+    <!-- Medieval -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Greatbow"
+                or defName = "ComplexClothing"
+                or defName = "CarpetMaking"
+                or defName = "Smithing"
+                or defName = "Stonecutting"
+                or defName = "LongBlades"
+                or defName = "PlateArmor"
+            ]
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- Conditional because Vanilla Furniture Expanded adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ComplexFurniture"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ComplexFurniture"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ComplexFurniture"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Greatbow"
+                or defName = "LongBlades"
+                or defName = "PlateArmor"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- remove tags with faction start info so we can apply the start info to new techs that contain this one -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ComplexFurniture"
+                or defName = "Stonecutting"
+                or defName = "ComplexClothing"
+            ]/tags/li[text()="ClassicStart"]
+        </xpath>
+    </Operation>
+
+    <!-- Industrial -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DrugProduction"
+                or defName = "PsychiteRefining"
+                or defName = "WakeUpProduction"
+                or defName = "GoJuiceProduction"
+                or defName = "PenoxycylineProduction"
+                or defName = "Electricity"
+                or defName = "Batteries"
+                or defName = "BiofuelRefining"
+                or defName = "WatermillGenerator"
+                or defName = "NutrientPaste"
+                or defName = "SolarPanels"
+                or defName = "AirConditioning"
+                or defName = "Autodoors"
+                or defName = "Hydroponics"
+                or defName = "PackagedSurvivalMeal"
+                or defName = "Firefoam"
+                or defName = "IEDs"
+                or defName = "GeothermalPower"
+                or defName = "SterileMaterials"
+                or defName = "ColoredLights"
+                or defName = "Machining"
+                or defName = "SmokepopBelt"
+                or defName = "Gunsmithing"
+                or defName = "FlakArmor"
+                or defName = "Mortars"
+                or defName = "BlowbackOperation"
+                or defName = "GasOperation"
+                or defName = "GunTurrets"
+                or defName = "MicroelectronicsBasics"
+                or defName = "MoisturePump"
+                or defName = "HospitalBed"
+                or defName = "DeepDrilling"
+                or defName = "GroundPenetratingScanner"
+                or defName = "TransportPod"
+                or defName = "MedicineProduction"
+                or defName = "LongRangeMineralScanner"
+                or defName = "ShieldBelt"
+                or defName = "PrecisionRifling"
+                or defName = "HeavyTurrets"
+                or defName = "MultibarrelWeapons"
+                or defName = "MultiAnalyzer"
+                or defName = "VitalsMonitor"
+                or defName = "Fabrication"
+                or defName = "AdvancedFabrication"
+                or defName = "SniperTurret"
+                or defName = "FoamTurret"
+                or defName = "RocketswarmLauncher"
+            ]
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- Conditional because EPOE adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "Prosthetics"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "Prosthetics"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "Prosthetics"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Conditional because Vanilla Furniture Expanded adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "TubeTelevision"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "TubeTelevision"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "TubeTelevision"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Conditional because Vanilla Furniture Expanded adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "FlatscreenTelevision"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "FlatscreenTelevision"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "FlatscreenTelevision"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "PsychiteRefining"
+                or defName = "WakeUpProduction"
+                or defName = "GoJuiceProduction"
+                or defName = "PenoxycylineProduction"
+                or defName = "Batteries"
+                or defName = "BiofuelRefining"
+                or defName = "WatermillGenerator"
+                or defName = "NutrientPaste"
+                or defName = "SolarPanels"
+                or defName = "AirConditioning"
+                or defName = "Autodoors"
+                or defName = "Hydroponics"
+                or defName = "TubeTelevision"
+                or defName = "PackagedSurvivalMeal"
+                or defName = "Firefoam"
+                or defName = "IEDs"
+                or defName = "GeothermalPower"
+                or defName = "SterileMaterials"
+                or defName = "ColoredLights"
+                or defName = "Machining"
+                or defName = "SmokepopBelt"
+                or defName = "Prosthetics"
+                or defName = "Gunsmithing"
+                or defName = "FlakArmor"
+                or defName = "Mortars"
+                or defName = "BlowbackOperation"
+                or defName = "GasOperation"
+                or defName = "GunTurrets"
+                or defName = "MicroelectronicsBasics"
+                or defName = "FlatscreenTelevision"
+                or defName = "MoisturePump"
+                or defName = "HospitalBed"
+                or defName = "DeepDrilling"
+                or defName = "GroundPenetratingScanner"
+                or defName = "TransportPod"
+                or defName = "MedicineProduction"
+                or defName = "LongRangeMineralScanner"
+                or defName = "ShieldBelt"
+                or defName = "PrecisionRifling"
+                or defName = "HeavyTurrets"
+                or defName = "MultibarrelWeapons"
+                or defName = "MultiAnalyzer"
+                or defName = "VitalsMonitor"
+                or defName = "Fabrication"
+                or defName = "AdvancedFabrication"
+                or defName = "SniperTurret"
+                or defName = "FoamTurret"
+                or defName = "RocketswarmLauncher"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "TubeTelevision"
+                or defName = "SmokepopBelt"
+                or defName = "FlakArmor"
+                or defName = "MoisturePump"
+                or defName = "HospitalBed"
+                or defName = "TransportPod"
+                or defName = "LongRangeMineralScanner"
+                or defName = "ShieldBelt"
+                or defName = "MultiAnalyzer"
+                or defName = "SniperTurret"
+                or defName = "FoamTurret"
+                or defName = "RocketswarmLauncher"
+            ]/hiddenPrerequisites
+        </xpath>
+    </Operation>
+
+    <!-- remove tags with faction start info so we can apply the start info to new techs that contain this one -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Electricity"
+                or defName = "NutrientPaste"
+                or defName = "AirConditioning"
+            ]/tags/li[text()="ClassicStart"]
+        </xpath>
+    </Operation>
+
+    <!-- Spacer -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Cryptosleep"
+                or defName = "ReconArmor"
+                or defName = "PoweredArmor"
+                or defName = "ChargedShot"
+            ]
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- Conditional because SoS2 adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipBasics"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipBasics"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipBasics"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipReactor"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipReactor"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipReactor"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipEngine"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipEngine"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipEngine"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipComputerCore"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipComputerCore"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipComputerCore"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipSensorCluster"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipSensorCluster"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipSensorCluster"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "ShipCryptosleep"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipCryptosleep"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "ShipCryptosleep"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Conditional because EPOE adds tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "Bionics"]/tab</xpath>
+        <match Class="PatchOperationReplace">
+            <xpath>Defs/ResearchProjectDef[defName = "Bionics"]/tab</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "Bionics"]</xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "Cryptosleep"
+                or defName = "ReconArmor"
+                or defName = "PoweredArmor"
+                or defName = "ChargedShot"
+                or defName = "Bionics"
+                or defName = "ShipBasics"
+                or defName = "ShipSensorCluster"
+                or defName = "ShipCryptosleep"
+                or defName = "ShipReactor"
+                or defName = "ShipEngine"
+                or defName = "ShipComputerCore"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ReconArmor"
+                or defName = "PoweredArmor"
+                or defName = "ChargedShot"
+                or defName = "Bionics"
+            ]/hiddenPrerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/TerrainDef[
+                   defName = "Bridge"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Construction</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "TableSculpting"
+                or defName = "TableButcher"
+                or defName = "AnimalSleepingBox"
+                or defName = "Stool"
+                or defName = "Table1x2c"
+                or defName = "Table2x2c"
+                or defName = "Table2x4c"
+                or defName = "Table3x3c"
+                or defName = "EggBox"
+                or defName = "HoopstoneRing"
+                or defName = "GameOfUrBoard"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/TerrainDef[
+                   defName = "WoodPlankFloor"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "FueledStove"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_SteelWorking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/TerrainDef[
+                   @Name = "FlagstoneBase"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Masonry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Armchair"
+                or defName = "BilliardsTable"
+                or defName = "PokerTable"
+                or defName = "RoyalBed"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_ComplexClothworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Bed"
+                or defName = "ChessTable"
+                or defName = "DiningChair"
+                or defName = "DoubleBed"
+                or defName = "Dresser"
+                or defName = "EndTable"
+                or defName = "Shelf"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Vent"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_SteelWorking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "ToolCabinet"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Industrialization</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "ElectricSmithy"
+                or defName = "ElectricTailoringBench"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Apparel_CollarShirt"
+                or defName = "Apparel_Pants"
+                or defName = "Apparel_BasicShirt"
+                or defName = "Apparel_Tuque"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Clothworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SteleGrand"
+                or defName = "SteleLarge"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Masonry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Sarcophagus"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Masonry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Weapon_GrenadeFrag"
+                or defName = "Weapon_GrenadeMolotov"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Rifling</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "ToolCabinet"
+                or defName = "ChemfuelPoweredGenerator"
+                or defName = "PowerConduit"
+                or defName = "WoodFiredGenerator"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_ScientificTheory</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SunLamp"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+                <li>DuneRef_Ecology</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "WindTurbine"
+                or defName = "WatermillGenerator"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+                <li>DuneRef_Composites</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Shell_Smoke"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Chemistry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "TrapIED_AntigrainWarhead"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_NuclearFission</li>
+                <li>DuneRef_Combustion</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "TrapIED_EMP"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Plastics</li>
+                <li>DuneRef_Combustion</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "TrapIED_Firefoam"
+                or defName = "TrapIED_Smoke"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Chemistry</li>
+                <li>DuneRef_Combustion</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "BiofuelRefinery"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_ScientificTheory</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Weapon_GrenadeEMP"
+                or defName = "Shell_EMP"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Plastics</li>
+                <li>DuneRef_Computers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Gun_EmpLauncher"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Plastics</li>
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_AdvancedBallistics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <!-- to remove rifling that gets added from base class -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Gun_EmpLauncher"
+            ]/recipeMaker
+        </xpath>
+        <value>
+            <researchPrerequisite Inherit="False"></researchPrerequisite>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "CommsConsole"
+                or defName = "OrbitalTradeBeacon"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Radio</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "FabricationBench"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Plastics</li>
+                <li>DuneRef_Electronics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Shell_Firefoam"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Chemistry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "FirefoamPopper"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Chemistry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SolarGenerator"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Electronics</li>
+                <li>DuneRef_Composites</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "MegascreenTelevision"
+                or defName = "FlatscreenTelevision"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+                <li>DuneRef_Lasers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SimpleResearchBench"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "HiTechResearchBench"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Computers</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "Apparel_FirefoampopPack"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Chemistry</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <!-- Remove steel requirement from simple research bench -->
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SimpleResearchBench"
+            ]/costStuffCount
+        </xpath>
+        <value>
+            <costStuffCount>100</costStuffCount>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "SimpleResearchBench"
+            ]/costList
+        </xpath>
+    </Operation>
+
+</Patch>

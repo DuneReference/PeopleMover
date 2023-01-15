@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ARKPPP_WirelessPowerTheoryResearch"
+                or defName = "ARKPPP_WirelessPowerShortRangeResearch"
+                or defName = "ARKPPP_WirelessPowerShortRangePortableResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeAdvancedResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangePortableReceptorResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeARES"
+                or defName = "ARKPPP_WirelessPowerLongRangeARESEMP"
+                or defName = "ARKPPP_WirelessPowerLongRangeARES2"
+                or defName = "ARKPPP_HackingSatelliteNetwork"
+                or defName = "ARKPPP_HackingSatelliteNetworkSTS"
+                or defName = "ARKPPP_HackingSatelliteNetworkAD"
+                or defName = "ARKPPP_HackingSatelliteNetworkLens"
+                or defName = "ARKPPP_HackingSatelliteNetworkADRT"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "ARKPPP_WirelessPowerTheoryResearch"
+                or defName = "ARKPPP_WirelessPowerShortRangeResearch"
+                or defName = "ARKPPP_WirelessPowerShortRangePortableResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeAdvancedResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangePortableReceptorResearch"
+                or defName = "ARKPPP_WirelessPowerLongRangeARES"
+                or defName = "ARKPPP_WirelessPowerLongRangeARESEMP"
+                or defName = "ARKPPP_WirelessPowerLongRangeARES2"
+                or defName = "ARKPPP_HackingSatelliteNetwork"
+                or defName = "ARKPPP_HackingSatelliteNetworkSTS"
+                or defName = "ARKPPP_HackingSatelliteNetworkAD"
+                or defName = "ARKPPP_HackingSatelliteNetworkLens"
+                or defName = "ARKPPP_HackingSatelliteNetworkADRT"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Telecommunications"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ARKPPP_WirelessPowerTheoryResearch</li>
+            <li>ARKPPP_WirelessPowerShortRangeResearch</li>
+            <li>ARKPPP_WirelessPowerShortRangePortableResearch</li>
+            <li>ARKPPP_WirelessPowerLongRangeResearch</li>
+            <li>ARKPPP_WirelessPowerLongRangePortableReceptorResearch</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedAI"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ARKPPP_WirelessPowerLongRangeAdvancedResearch</li>
+            <li>ARKPPP_WirelessPowerLongRangeARES</li>
+            <li>ARKPPP_WirelessPowerLongRangeARESEMP</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedPowerCells"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ARKPPP_WirelessPowerLongRangeARES</li>
+            <li>ARKPPP_WirelessPowerLongRangeARESEMP</li>
+            <li>ARKPPP_WirelessPowerLongRangeARES2</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_AdvancedLasers"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ARKPPP_WirelessPowerLongRangeARES2</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SpaceTechnology"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>ARKPPP_HackingSatelliteNetwork</li>
+            <li>ARKPPP_HackingSatelliteNetworkSTS</li>
+            <li>ARKPPP_HackingSatelliteNetworkAD</li>
+            <li>ARKPPP_HackingSatelliteNetworkLens</li>
+            <li>ARKPPP_HackingSatelliteNetworkADRT</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "ARKPPP_WirelessPowerTab"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "ARKPPP_WirelessPowerReceptor"
+                or defName = "ARKPPP_WirelessPortablePowerReceptor"
+                or defName = "ARKPPP_WirelessPowerEmitter"
+                or defName = "ARKPPP_WirelessPowerEmitterAdvanced"
+                or defName = "ARKPPP_LocalWirelessPowerEmitter"
+                or defName = "ARKPPP_LocalWirelessPortablePowerEmitter"
+                or defName = "ARKPPP_PowerBeamAbsorptionDish"
+                or defName = "ARKPPP_PowerBeamSatelliteTargetingSystem"
+                or defName = "ARKPPP_ADRelayTower"
+            ]/researchPrerequisites/li[text()="Electricity"]
+        </xpath>
+    </Operation>
+
+</Patch>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Vanilla Cooking Expanded</li>
+        </mods>
+        <match Class="PatchOperationReplace">
+            <xpath>
+                Defs/ResearchProjectDef[defName = "VCE_VegMilkExtraction"]/tab
+            </xpath>
+            <value>
+                <tab>DuneRef_Hidden</tab>
+            </value>
+        </match>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Vanilla Cooking Expanded</li>
+        </mods>
+        <match Class="PatchOperationRemove">
+            <xpath>
+                Defs/ResearchProjectDef[defName = "VCE_VegMilkExtraction"]/prerequisites
+            </xpath>
+        </match>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationFindMod">
+        <mods>
+            <li>Vanilla Cooking Expanded</li>
+        </mods>
+        <match Class="PatchOperationAdd">
+            <xpath>
+                Defs/ResearchProjectDef[
+                    defName = "DuneRef_Electronics"
+                ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+            </xpath>
+            <value>
+                <li>VCE_VegMilkExtraction</li>
+            </value>
+        </match>
+    </Operation>
+
+</Patch>

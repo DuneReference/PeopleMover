@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+    <!-- Did not include FSX Refining for CE Patch -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "OilDrilling"
+                or defName = "DeepOilWells"
+                or defName = "ChemfuelRefining"
+                or defName = "NeutroamineProduction"
+                or defName = "SynthyleneProduction"
+                or defName = "Napalm"
+                or defName = "ArtificialFloors"
+                or defName = "SynthyleneComponents"
+                or defName = "SynthyleneAdvComponents"
+                or defName = "SynthreadProduction"
+                or defName = "SynthamideProduction"
+                or defName = "SynthamideCompositeProduction"
+                or defName = "PlasteelProduction"
+                or defName = "HyperweaveProduction"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "OilDrilling"
+                or defName = "DeepOilWells"
+                or defName = "ChemfuelRefining"
+                or defName = "NeutroamineProduction"
+                or defName = "SynthyleneProduction"
+                or defName = "Napalm"
+                or defName = "ArtificialFloors"
+                or defName = "SynthyleneComponents"
+                or defName = "SynthyleneAdvComponents"
+                or defName = "SynthreadProduction"
+                or defName = "SynthamideProduction"
+                or defName = "SynthamideCompositeProduction"
+                or defName = "PlasteelProduction"
+                or defName = "HyperweaveProduction"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Refining"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>OilDrilling</li>
+            <li>ChemfuelRefining</li>
+            <li>Napalm</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Refining"
+                or defName = "DuneRef_Radio"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>DeepOilWells</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SyntheticMaterials"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>NeutroamineProduction</li>
+            <li>SynthyleneProduction</li>
+            <li>ArtificialFloors</li>
+            <li>SynthyleneComponents</li>
+            <li>SynthyleneAdvComponents</li>
+            <li>SynthreadProduction</li>
+            <li>SynthamideProduction</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Composites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>SynthamideCompositeProduction</li>
+            <li>PlasteelProduction</li>
+            <li>HyperweaveProduction</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "Rimefeller"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/TerrainDef[
+                   defName = "Wood_ParquetHerring"
+                or defName = "Wood_ParquetVersailles"
+            ]
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFEC_Togas"
+                or defName = "VFEC_TemperatureControl"
+                or defName = "VFEC_MeatDrying"
+                or defName = "VFEC_Mosaics"
+                or defName = "VFEC_Thermaebath"
+                or defName = "VFEC_DramaAndComedy"
+                or defName = "VFEC_BronzeWorking"
+                or defName = "VFEC_CraftingBench"
+                or defName = "VFEC_CementMaking"
+                or defName = "VFEC_WoodfiredCrematorium"
+                or defName = "VFEC_TyrianProduction"
+                or defName = "VFEC_RoadBuilding"
+                or defName = "VFEC_HeavyShieldMaking"
+                or defName = "VFEC_LegionaryArmaments"
+                or defName = "VFEC_LegionnaireArmor"
+                or defName = "VFEC_CenturionArmor"
+                or defName = "VFEC_Scorpion"
+                or defName = "VFEC_Beacons"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove tags with faction start info so we can apply the start info to new techs that contain this one -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "VFEC_Togas"
+                or defName = "VFEC_TemperatureControl"
+                or defName = "VFEC_MeatDrying"
+                or defName = "VFEC_Mosaics"
+                or defName = "VFEC_Thermaebath"
+                or defName = "VFEC_DramaAndComedy"
+                or defName = "VFEC_BronzeWorking"
+                or defName = "VFEC_CraftingBench"
+                or defName = "VFEC_CementMaking"
+                or defName = "VFEC_WoodfiredCrematorium"
+                or defName = "VFEC_TyrianProduction"
+                or defName = "VFEC_RoadBuilding"
+                or defName = "VFEC_HeavyShieldMaking"
+                or defName = "VFEC_LegionaryArmaments"
+                or defName = "VFEC_LegionnaireArmor"
+                or defName = "VFEC_CenturionArmor"
+                or defName = "VFEC_Scorpion"
+                or defName = "VFEC_Beacons"
+                or defName = "PsychoidBrewing"
+                or defName = "TreeSowing"
+                or defName = "PassiveCooler"
+                or defName = "Pemmican"
+                or defName = "RecurveBow"
+            ]/tags/li[text()="ClassicalStart"]
+        </xpath>
+    </Operation>
+
+    <!-- add tags with faction start info to the cooresponding new ResearchProjectDefs so we can auto-unlock those at the start -->
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Woodworking"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Woodworking"]/tags</xpath>
+            <value>
+                <li>ClassicalStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Woodworking"]</xpath>
+            <value>
+                <tags>
+                    <li>ClassicalStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Currency"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Currency"]/tags</xpath>
+            <value>
+                <li>ClassicalStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Currency"]</xpath>
+            <value>
+                <tags>
+                    <li>ClassicalStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Engineering"]/tags</xpath>
+        <match Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Engineering"]/tags</xpath>
+            <value>
+                <li>ClassicalStart</li>
+            </value>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchProjectDef[defName = "DuneRef_Engineering"]</xpath>
+            <value>
+                <tags>
+                    <li>ClassicalStart</li>
+                </tags>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Clothworking"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_Togas</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Clothworking"
+                or defName = "DuneRef_Woodworking"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_TyrianProduction</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Masonry"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_TemperatureControl</li>
+            <li>VFEC_CementMaking</li>
+            <li>VFEC_WoodfiredCrematorium</li>
+            <li>VFEC_Beacons</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Pottery"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_MeatDrying</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Masonry"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_Mosaics</li>
+            <li>VFEC_Thermaebath</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_WritingAndCulture"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_DramaAndComedy</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SteelWorking"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_BronzeWorking</li>
+            <li>VFEC_CraftingBench</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Currency"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_RoadBuilding</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_SteelWorking"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_HeavyShieldMaking</li>
+            <li>VFEC_LegionaryArmaments</li>
+            <li>VFEC_LegionnaireArmor</li>
+            <li>VFEC_CenturionArmor</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Engineering"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>VFEC_Scorpion</li>
+        </value>
+    </Operation>
+
+    <!-- Hide tabs created by this mod -->
+
+    <!-- Special conditional tab edit since all their techs in various mods are in the same tab -->
+    <Operation Class="PatchOperationConditional">
+        <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+        <match Class="PatchOperationConditional">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.HiddenTab"]</xpath>
+            <nomatch Class="PatchOperationAdd">
+                <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]/modExtensions</xpath>
+                <value>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </value>
+            </nomatch>
+        </match>
+        <nomatch Class="PatchOperationAdd">
+            <xpath>Defs/ResearchTabDef[defName="VanillaExpanded"]</xpath>
+            <value>
+                <modExtensions>
+                    <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                        <hidden>True</hidden>
+                    </li>
+                </modExtensions>
+            </value>
+        </nomatch>
+    </Operation>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationReplace">
+            <xpath>
+            Defs/ThingDef[
+                   defName = "VFEC_MeatDryingRack"
+                or defName = "VFEC_LargePassiveCooler"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Woodworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+            <xpath>
+            Defs/ThingDef[
+                   defName = "VFEC_HeatStones"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Health</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+            <xpath>
+            Defs/ThingDef[
+                   defName = "VFEC_Wreath"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Clothworking</li>
+                <li>DuneRef_SteelWorking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+    
+    <Operation Class="PatchOperationReplace">
+            <xpath>
+            Defs/ThingDef[
+                   defName = "VFEC_Tent"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_ComplexClothworking</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationReplace">
+            <xpath>
+            Defs/ThingDef[
+                   defName = "VFEC_Turret_Scorpion"
+            ]/researchPrerequisites
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_MilitaryEngineering</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+</Patch>

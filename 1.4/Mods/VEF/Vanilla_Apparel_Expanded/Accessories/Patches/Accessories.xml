@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Moving Individual items to different techs -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VAEA_Apparel_AmmoPack"
+            ]/recipeMaker/researchPrerequisite
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Rifling</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+    
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VAEA_Apparel_MiniTurretPack"
+            ]/recipeMaker
+        </xpath>
+        <value>
+            <researchPrerequisites Inherit="False">
+                <li>DuneRef_Robotics</li>
+            </researchPrerequisites>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ThingDef[
+                   defName = "VAEA_Apparel_RessurectorBelt"
+            ]
+        </xpath>
+        <value>
+            <recipeMaker>
+                <unfinishedThingDef>UnfinishedBelt</unfinishedThingDef>
+                <researchPrerequisite>DuneRef_Robotics</researchPrerequisite>
+                <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+                <workSkill>Crafting</workSkill>
+                <effectWorking>Smith</effectWorking>
+                <soundWorking>Recipe_Machining</soundWorking>
+                <recipeUsers>
+                    <li>TableMachining</li>
+                </recipeUsers>
+                <useIngredientsForColor>false</useIngredientsForColor>
+                <skillRequirements>
+                    <Crafting>8</Crafting>
+                </skillRequirements>
+            </recipeMaker>
+            <costList>
+                <ComponentIndustrial>2</ComponentIndustrial>
+                <Steel>50</Steel>
+                <Plasteel>20</Plasteel>
+            </costList>
+        </value>
+    </Operation>
+    
+</Patch>

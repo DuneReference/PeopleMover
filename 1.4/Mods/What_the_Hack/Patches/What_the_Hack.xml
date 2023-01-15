@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+    <!-- Move mods research to hidden tab -->
+
+    <Operation Class="PatchOperationReplace">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "WTH_HackingBasics"
+                or defName = "WTH_PortableChemfuelPlatform"
+                or defName = "WTH_PortableDisassemblingBench"
+                or defName = "WTH_MechanoidWorkshop"
+                or defName = "WTH_WorkModules"
+                or defName = "WTH_SpeedModule"
+                or defName = "WTH_ArmorModule"
+                or defName = "WTH_OpticSensorModule"
+                or defName = "WTH_CargoModule"
+                or defName = "WTH_HackingRemoteControl"
+                or defName = "WTH_RepairModule"
+                or defName = "WTH_RepairArm"
+                or defName = "WTH_SelfDestruct"
+                or defName = "WTH_TurretModule"
+                or defName = "WTH_TurretModule_GunTurrets"
+                or defName = "WTH_TurretModule_Mortars"
+                or defName = "WTH_BatteryExpansionModule"
+                or defName = "WTH_OverdriveModule"
+                or defName = "WTH_VanometricModule"
+                or defName = "WTH_BeltModule"
+                or defName = "WTH_HackingAdvanced"
+                or defName = "WTH_InduceEmergencySignal"
+                or defName = "WTH_LRMSTuning"
+                or defName = "WTH_RogueAI"
+                or defName = "WTH_HiveshipHackingFacility"
+                or defName = "WTH_ExtractBrainData"
+                or defName = "WTH_BeltModule"
+            ]/tab
+        </xpath>
+        <value>
+            <tab>DuneRef_Hidden</tab>
+        </value>
+    </Operation>
+
+    <!-- remove prerequisites so no funky stuff happens when we try to unlock them automatically -->
+
+    <Operation Class="PatchOperationRemove">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "WTH_HackingBasics"
+                or defName = "WTH_PortableChemfuelPlatform"
+                or defName = "WTH_PortableDisassemblingBench"
+                or defName = "WTH_MechanoidWorkshop"
+                or defName = "WTH_WorkModules"
+                or defName = "WTH_SpeedModule"
+                or defName = "WTH_ArmorModule"
+                or defName = "WTH_OpticSensorModule"
+                or defName = "WTH_CargoModule"
+                or defName = "WTH_HackingRemoteControl"
+                or defName = "WTH_RepairModule"
+                or defName = "WTH_RepairArm"
+                or defName = "WTH_SelfDestruct"
+                or defName = "WTH_TurretModule"
+                or defName = "WTH_TurretModule_GunTurrets"
+                or defName = "WTH_TurretModule_Mortars"
+                or defName = "WTH_BatteryExpansionModule"
+                or defName = "WTH_OverdriveModule"
+                or defName = "WTH_VanometricModule"
+                or defName = "WTH_BeltModule"
+                or defName = "WTH_HackingAdvanced"
+                or defName = "WTH_InduceEmergencySignal"
+                or defName = "WTH_LRMSTuning"
+                or defName = "WTH_RogueAI"
+                or defName = "WTH_HiveshipHackingFacility"
+                or defName = "WTH_ExtractBrainData"
+            ]/prerequisites
+        </xpath>
+    </Operation>
+
+    <!-- Add techs to RimCivTechTree researches -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchProjectDef[
+                   defName = "DuneRef_Mechanites"
+            ]/modExtensions/li[@Class="DuneRef_CustomTechTreeFramework.ResearchUnlocks"]/researchUnlocks
+        </xpath>
+        <value>
+            <li>WTH_HackingBasics</li>
+            <li>WTH_PortableChemfuelPlatform</li>
+            <li>WTH_PortableDisassemblingBench</li>
+            <li>WTH_MechanoidWorkshop</li>
+            <li>WTH_WorkModules</li>
+            <li>WTH_SpeedModule</li>
+            <li>WTH_ArmorModule</li>
+            <li>WTH_OpticSensorModule</li>
+            <li>WTH_CargoModule</li>
+            <li>WTH_HackingRemoteControl</li>
+            <li>WTH_RepairModule</li>
+            <li>WTH_RepairArm</li>
+            <li>WTH_SelfDestruct</li>
+            <li>WTH_TurretModule</li>
+            <li>WTH_TurretModule_GunTurrets</li>
+            <li>WTH_TurretModule_Mortars</li>
+            <li>WTH_BatteryExpansionModule</li>
+            <li>WTH_OverdriveModule</li>
+            <li>WTH_VanometricModule</li>
+            <li>WTH_BeltModule</li>
+            <li>WTH_HackingAdvanced</li>
+            <li>WTH_InduceEmergencySignal</li>
+            <li>WTH_LRMSTuning</li>
+            <li>WTH_RogueAI</li>
+            <li>WTH_HiveshipHackingFacility</li>
+            <li>WTH_ExtractBrainData</li>
+        </value>
+    </Operation>
+    
+    <!-- Hide tabs created by this mod -->
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>
+            Defs/ResearchTabDef[defName = "WTH_ResearchTab"]
+        </xpath>
+        <value>
+            <modExtensions>
+                <li Class="DuneRef_CustomTechTreeFramework.HiddenTab">
+                    <hidden>True</hidden>
+                </li>
+            </modExtensions>
+        </value>
+    </Operation>
+
+</Patch>
