@@ -307,9 +307,7 @@ namespace DuneRef_PeopleMover
         {
             if (building != null && building.def.defName == "DuneRef_PeopleMover")
             {
-                int returningPathCost = GetPathCostFromBuildingRotVsPawnDir(0, building.Rotation, building.Position, pawn.Position, "ChangePathCostForConveyor");
-                Log.Message($"[ChangePathCostForConveyor]: in {0}, out {returningPathCost}");
-                return returningPathCost;
+                return GetPathCostFromBuildingRotVsPawnDir(0, building.Rotation, building.Position, pawn.Position, "ChangePathCostForConveyor");
             }
 
             return 0;
