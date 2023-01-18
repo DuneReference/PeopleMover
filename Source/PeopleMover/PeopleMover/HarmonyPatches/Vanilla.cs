@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using Verse.Noise;
 using System.Reflection;
 using System.Security.Cryptography;
+using RimWorld;
 
 namespace DuneRef_PeopleMover
 {
@@ -162,7 +163,9 @@ namespace DuneRef_PeopleMover
         {
             int returningPathCost = buildingPathCost > terrainPathCost ? buildingPathCost : terrainPathCost;
 
-            return (building.def.defName == "DuneRef_PeopleMover" && buildingPathCost < terrainPathCost) ? buildingPathCost : returningPathCost;
+            return (((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && 
+                     building.TryGetComp<CompPowerTrader>().PowerOn
+                   ) && buildingPathCost < terrainPathCost) ? buildingPathCost : returningPathCost;
         }
 
         public static IEnumerable<CodeInstruction> ChangePathCostInSnowSection(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -207,7 +210,10 @@ namespace DuneRef_PeopleMover
 
         public static int ChangePathCostInSnowSectionFn(int snowPathCost, int buildingPathCost, Thing building)
         {
-            return building.def.defName == "DuneRef_PeopleMover" && buildingPathCost < snowPathCost ? buildingPathCost : snowPathCost;
+            return (building != null && (
+                    (building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && 
+                     building.TryGetComp<CompPowerTrader>().PowerOn
+                   ) && buildingPathCost < snowPathCost) ? buildingPathCost : snowPathCost;
         }
 
         /* CostToMoveIntoCell */
@@ -255,7 +261,7 @@ namespace DuneRef_PeopleMover
 
         public static int ChangePathCostInEdificeSectionFn(int currentPathCost, Building edifice, Pawn pawn, IntVec3 newCell)
         {
-            if (edifice.def.defName == "DuneRef_PeopleMover")
+            if ((edifice.def.defName == "DuneRef_PeopleMover" || edifice.def.defName == "DuneRef_PeopleMover_PowerHub") && edifice.GetComp<CompPowerTrader>().PowerOn)
             {
                 int pathCost = PeopleMoverSettings.movespeedPathCost;
 
@@ -305,7 +311,10 @@ namespace DuneRef_PeopleMover
 
         public static int ChangePathCostForConveyorFn(Building building, Pawn pawn)
         {
-            if (building != null && building.def.defName == "DuneRef_PeopleMover")
+            if (building != null && (
+                 (building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && 
+                  building.GetComp<CompPowerTrader>().PowerOn)
+               )
             {
                 return GetPathCostFromBuildingRotVsPawnDir(0, building.Rotation, building.Position, pawn.Position, "ChangePathCostForConveyor");
             }

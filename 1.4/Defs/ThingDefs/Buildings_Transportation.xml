@@ -40,11 +40,69 @@
         <clearBuildingArea>false</clearBuildingArea>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
         <size>(1,1)</size>
+        <pathCost>0</pathCost>
+        <passability>Standable</passability>
+        <rotatable>true</rotatable>
+        <drawGUIOverlay>true</drawGUIOverlay>
+        <placeWorkers>
+            <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
+        </placeWorkers>
+        <comps>
+            <li Class="CompProperties_Power">
+                <compClass>CompPowerTrader</compClass>
+                <basePowerConsumption>10</basePowerConsumption>
+                <transmitsPower>true</transmitsPower>
+                <shortCircuitInRain>false</shortCircuitInRain>
+            </li>
+            <li Class="CompProperties_Flickable"/>
+        </comps>
+        <tradeability>None</tradeability>
+        <placingDraggableDimensions>1</placingDraggableDimensions> 
+    </ThingDef>
+
+    <ThingDef>
+        <defName>DuneRef_PeopleMover_PowerHub</defName>
+        <label>People Mover Power Hub</label>
+        <description>Move People, but faster.</description>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon</uiIconPath>
+        <graphicData>
+            <texPath>Things/Buildings/PeopleMover/PeopleMover_Arrow_640x640</texPath>
+            <graphicClass>Graphic_Multi</graphicClass>
+            <drawRotated>true</drawRotated>
+            <drawSize>(1, 1)</drawSize>
+        </graphicData>
+        <category>Building</category>
+        <thingClass>Building</thingClass>
+        <altitudeLayer>Building</altitudeLayer>
+        <soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
+        <canOverlapZones>false</canOverlapZones>
+        <constructEffect>ConstructMetal</constructEffect>
+        <selectable>true</selectable>
+        <drawerType>MapMeshAndRealTime</drawerType>
+        <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+        <repairEffect>Repair</repairEffect>
+        <leaveResourcesWhenKilled>true</leaveResourcesWhenKilled>
+        <filthLeaving>Filth_RubbleBuilding</filthLeaving>
+        <statBases>
+            <SellPriceFactor>0.70</SellPriceFactor>
+            <Beauty>-0.5</Beauty>
+            <Mass>10</Mass>
+            <Flammability>0.4</Flammability>
+            <MaxHitPoints>80</MaxHitPoints>
+            <WorkToBuild>100</WorkToBuild>
+        </statBases>
+        <designationCategory>Misc</designationCategory>
+        <uiIconScale>0.8</uiIconScale>
+        <costList>
+            <Steel>5</Steel>
+        </costList>
+        <clearBuildingArea>false</clearBuildingArea>
+        <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+        <size>(1,1)</size>
         <pathCost>-1</pathCost>
         <passability>Standable</passability>
         <rotatable>true</rotatable>
         <drawGUIOverlay>true</drawGUIOverlay>
-        <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
         <placeWorkers>
             <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
         </placeWorkers>

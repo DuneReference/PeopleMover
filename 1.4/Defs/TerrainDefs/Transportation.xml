@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <TerrainDef>
+        <defName>DuneRef_PeopleMover_Terrain</defName>
+        <label>People Mover - Terrain</label>
+        <description>Move People, but faster.</description>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain</texturePath>
+        <fertility>0.0</fertility>
+        <edgeType>Hard</edgeType>
+        <layerable>true</layerable>
+        <constructEffect>ConstructMetal</constructEffect>
+        <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
+        <altitudeLayer>Building</altitudeLayer>
+        <statBases>
+            <Beauty>-0.5</Beauty>
+            <Mass>10</Mass>
+            <MaxHitPoints>80</MaxHitPoints>
+            <WorkToBuild>100</WorkToBuild>
+        </statBases>
+        <designationCategory>Misc</designationCategory>
+        <costList>
+            <Steel>5</Steel>
+        </costList>
+        <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+        <pathCost>-1</pathCost>
+        <passability>Standable</passability>
+        <placeWorkers>
+            <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
+        </placeWorkers>
+    </TerrainDef>
+
+</Defs>
