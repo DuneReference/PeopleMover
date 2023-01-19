@@ -99,7 +99,7 @@
         <clearBuildingArea>false</clearBuildingArea>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
         <size>(1,1)</size>
-        <pathCost>-1</pathCost>
+        <pathCost>0</pathCost>
         <passability>Standable</passability>
         <rotatable>true</rotatable>
         <drawGUIOverlay>true</drawGUIOverlay>
@@ -113,7 +113,10 @@
                 <transmitsPower>true</transmitsPower>
                 <shortCircuitInRain>false</shortCircuitInRain>
             </li>
-            <li Class="CompProperties_Flickable"/>
+            <li Class="CompProperties_Flickable" />
+            <li>
+                <compClass>DuneRef_PeopleMover.PeopleMoverPowerHubComp</compClass>
+            </li>
         </comps>
         <tradeability>None</tradeability>
         <placingDraggableDimensions>1</placingDraggableDimensions> 

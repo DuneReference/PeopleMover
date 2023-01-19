@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <TerrainDef>
-        <defName>DuneRef_PeopleMover_Terrain</defName>
-        <label>People Mover - Terrain</label>
+    <TerrainDef Name="DuneRef_PeopleMover_Terrain_Base" Abstract="True">
         <description>Move People, but faster.</description>
-        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon</uiIconPath>
-        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain</texturePath>
         <fertility>0.0</fertility>
         <edgeType>Hard</edgeType>
         <layerable>true</layerable>
@@ -24,11 +20,35 @@
             <Steel>5</Steel>
         </costList>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
-        <pathCost>-1</pathCost>
-        <passability>Standable</passability>
-        <placeWorkers>
-            <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
-        </placeWorkers>
+        <pathCost>0</pathCost>
+    </TerrainDef>
+
+    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
+        <defName>DuneRef_PeopleMover_Terrain_North</defName>
+        <label>People Mover - Terrain (North)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_North</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_North</texturePath>
+    </TerrainDef>
+
+    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
+        <defName>DuneRef_PeopleMover_Terrain_East</defName>
+        <label>People Mover - Terrain (East)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_East</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_East</texturePath>
+    </TerrainDef>
+
+    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
+        <defName>DuneRef_PeopleMover_Terrain_South</defName>
+        <label>People Mover - Terrain (South)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_South</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_South</texturePath>
+    </TerrainDef>
+
+    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
+        <defName>DuneRef_PeopleMover_Terrain_West</defName>
+        <label>People Mover - Terrain (West)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_West</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_West</texturePath>
     </TerrainDef>
 
 </Defs>

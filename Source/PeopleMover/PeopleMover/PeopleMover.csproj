@@ -60,10 +60,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comps\PeopleMoverMapComp.cs" />
+    <Compile Include="Comps\PeopleMoverPowerHubComp.cs" />
     <Compile Include="HarmonyPatches\Vanilla.cs" />
     <Compile Include="HarmonyPatches\_HP_Startup.cs" />
     <Compile Include="PlaceWorker\Textures.cs" />
     <Compile Include="PlaceWorker\PlaceWorker_Arrow.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
