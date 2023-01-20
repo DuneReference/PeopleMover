@@ -20,6 +20,8 @@ namespace DuneRef_PeopleMover
         public static readonly Type patchType = typeof(VanillaPatches);
         public static Harmony Harm = HarmonyPatches.Harm;
 
+        public static TerrainDef terrainDef;
+
         public static void Patches()
         {
             // Patch CalculatedCostAt to allow PeopleMover's pathcost to make tiles pathcost lower than terrain's pathcost.
@@ -70,6 +72,10 @@ namespace DuneRef_PeopleMover
                     new Type[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) }
                 ),
                 transpiler: new HarmonyMethod(patchType, nameof(PrintPathFinderInfo)));
+
+            /* Patch SetTerrain to add/remove conveyors to network */
+            Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "SetTerrain"), postfix: new HarmonyMethod(patchType, nameof(AddNewTerrainToNetworkPostfix)));
+            Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), transpiler: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetwork)));
         }
 
         public static int GetPathCostFromBuildingRotVsPawnDir(int defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
@@ -132,11 +138,9 @@ namespace DuneRef_PeopleMover
             return returningPathCost;
         }
 
-        public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(int mapIndex, Map map)
+        public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(IntVec3 cell, Map map)
         {
-            Log.Message($"[IsMapIndexApartOfPeopleMoverPowerHubNetwork]: {map.cellIndices.IndexToCell(mapIndex)}");
-
-            return true;
+            return map.GetComponent<PeopleMoverMapComp>().isCellsNetworkPowered(cell);
         }
 
         /* CalculatedCostAt */
@@ -256,8 +260,7 @@ namespace DuneRef_PeopleMover
             {
                 if (terrain.defName == "DuneRef_PeopleMover_Terrain")
                 {
-                    // TODO: conditional for if terrain connected to a powered power hub
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(pathGrid.map.cellIndices.CellToIndex(nextCell), pathGrid.map))
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(nextCell, pathGrid.map))
                     {
                         returningPathCost = runningPathCost;
                     }
@@ -336,8 +339,7 @@ namespace DuneRef_PeopleMover
 
                 if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
                 {
-                    // TODO: conditional for if terrain connected to a powered power hub
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(pawn.Map.cellIndices.CellToIndex(newCell), pawn.Map))
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(newCell, pawn.Map))
                     {
                         int pathCost = PeopleMoverSettings.movespeedPathCost;
 
@@ -437,8 +439,7 @@ namespace DuneRef_PeopleMover
 
                 if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
                 {
-                    // TODO: conditional for if terrain connected to a powered power hub
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(mapIndex, pawn.Map))
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(pawn.Map.cellIndices.IndexToCell(mapIndex), pawn.Map))
                     {
                         Rot4 rotation = Rot4.North;
 
@@ -613,6 +614,84 @@ namespace DuneRef_PeopleMover
             } else if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
                 // Log.Message($"[CalculatedCostAt] terrain: {terrain.defName} finalCost: {finalCost}");
+            }
+        }
+
+        public static void AddNewTerrainToNetworkPostfix(IntVec3 c, TerrainDef newTerr, TerrainGrid __instance)
+        {
+            if (newTerr.defName.Contains("DuneRef_PeopleMover_Terrain"))
+            {
+                __instance.map.GetComponent<PeopleMoverMapComp>().RegisterConveyor(c);
+            }
+        }
+
+        public static IEnumerable<CodeInstruction> RemoveTerrainFromNetwork(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            try
+            {
+                CodeMatch[] desiredInstructions = new CodeMatch[]{
+                    // IL_0000: ldarg.0
+                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
+                    // IL_0001: ldfld class Verse.Map Verse.TerrainGrid::map
+                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
+                    // IL_0006: ldfld class Verse.CellIndices Verse.Map::cellIndices
+                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
+                    // IL_000b: ldarg.1
+                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_1),
+                    // IIL_000c: callvirt instance int32 Verse.CellIndices::CellToIndex(valuetype Verse.IntVec3)
+                    new CodeMatch(i => i.opcode == OpCodes.Callvirt),
+                    // IL_0011: stloc.0
+                    new CodeMatch(i => i.opcode == OpCodes.Stloc_0)
+                };
+
+                CodeMatch[] desiredInstructions2 = new CodeMatch[]{
+                    // IL_0054: stelem.ref
+                    new CodeMatch(i => i.opcode == OpCodes.Stelem_Ref),
+                    // IL_0055: ldarg.0
+                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
+                    // IL_0056: ldarg.1
+                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_1),
+                    // IL_0057: call instance void Verse.TerrainGrid::DoTerrainChangedEffects(valuetype Verse.IntVec3)
+                    new CodeMatch(i => i.opcode == OpCodes.Call)
+                };
+
+                return new CodeMatcher(instructions, generator)
+                    .Start()
+                    .MatchEndForward(desiredInstructions)
+                    .ThrowIfInvalid("Couldn't find the desired instructions")
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldarg_0))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.RemoveTerrainFromNetworkPart1Fn))))
+                    .MatchEndForward(desiredInstructions2)
+                    .ThrowIfInvalid("Couldn't find the desired instructions2")
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldarg_0))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldarg_1))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.RemoveTerrainFromNetworkPart2Fn))))
+                    .InstructionEnumeration();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[DuneRef_PeopleMover] : {ex}");
+                return instructions;
+            }
+        }
+
+        public static void RemoveTerrainFromNetworkPart1Fn(TerrainGrid terrainGrid, int mapIndex)
+        {
+            terrainDef = terrainGrid.topGrid[mapIndex];
+        }
+
+        public static void RemoveTerrainFromNetworkPart2Fn(TerrainGrid instance, IntVec3 c)
+        {
+            if (terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
+            {
+                instance.map.GetComponent<PeopleMoverMapComp>().DeregisterConveyor(c);
             }
         }
     }

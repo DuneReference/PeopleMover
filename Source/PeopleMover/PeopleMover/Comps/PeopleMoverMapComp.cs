@@ -4,185 +4,256 @@ using RimWorld.Planet;
 using System.Collections.Generic;
 using System.Linq;
 using Verse.Noise;
+using System.Collections;
 
 namespace DuneRef_PeopleMover
 {
     public class NetworkItem
     {
-        public IntVec3 cell = new IntVec3();
-        public bool isHub = false;
+        public IntVec3 cell;
+        public int network;
+        public bool isHub;
+        public CompPowerTrader powerComp;
 
-        public NetworkItem(IntVec3 cell, bool isHub = false)
+        public NetworkItem(IntVec3 cell, int network, bool isHub = false, CompPowerTrader powerComp = null)
         {
             this.cell = cell;
             this.isHub = isHub;
-            Log.Message($"[NetworkItem.ctor] Item created. isHub? {isHub}");
+            this.network = network;
+            this.powerComp = powerComp;
         }
     }
 
     public class PeopleMoverMapComp : MapComponent
     {
         public List<List<NetworkItem>> NetworksCache = new List<List<NetworkItem>>();
+        public Dictionary<IntVec3, NetworkItem> CellHashMap = new Dictionary<IntVec3, NetworkItem>();
+
+        // Used for network checking on add
+        public Dictionary<IntVec3, NetworkItem> RefreshCellHashMap = new Dictionary<IntVec3, NetworkItem>();
 
         public PeopleMoverMapComp(Map map) : base(map)
         {
-            Log.Message($"[PeopleMoverMapComp] PeopleMoverMapComp");
-        }
-        public override void FinalizeInit()
-        {
-            base.FinalizeInit();
-/*            Log.Message($"[FinalizeInit] FinalizeInit");
 
-            foreach (IntVec3 cell in map.AllCells)
-            {
-                if (cell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain"))
-                {
-                    if (getNetwork(cell) == -1)
-                    {
-                        Log.Message($"[FinalizeInit] Let's start the register");
-                        RegisterConveyor(cell);
-                    }
-                }
-            }*/
         }
 
+        /*
+         * Registers the conveyor specified and then checks the network to make sure
+         * it has everything possibly connected now.
+         */
         public void RegisterConveyor (IntVec3 newCell, bool isHub = false)
         {
-            IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(newCell, Rot4.North, new IntVec2(1, 1));
-
-            bool addedNewCell = false;
-            IntVec3 adjCellThatConnectedUs = new IntVec3(0, 0, 0);
+            int networkWereUsing = RegisterSingleConveyor(newCell, isHub);
 
             /*
-             * If it's a hub, add a new network
+             * Each time something is added we recheck the whole network so we can
+             * also add any rogue networks it may have connected.
              */
 
-            if (isHub)
+            // if something was added
+            if (networkWereUsing != -1)
             {
-                List <NetworkItem> newNetwork = new List<NetworkItem>();
-                newNetwork.Add(new NetworkItem(newCell, isHub));
+                // as long as 1 of the 4 adj didn't return a -1
+                List<NetworkItem> network = NetworksCache[networkWereUsing];
 
-                NetworksCache.Add(newNetwork);
-                Log.Message($"[RegisterConveyor] Hub at {newCell.x}, {newCell.z} was registered into network {NetworksCache.Count}");
+                bool foundSomethingInNetworkThatHadntBeenChecked = true;
 
-                addedNewCell = true;
-                adjCellThatConnectedUs = newCell;
-            } else
+                while (foundSomethingInNetworkThatHadntBeenChecked)
+                {
+                    foundSomethingInNetworkThatHadntBeenChecked = false;
+
+                    for (int i = 0; i < network.Count; i++)
+                    {
+                        NetworkItem networkItem = network[i];
+
+                        if (!RefreshCellHashMap.TryGetValue(networkItem.cell, out _))
+                        {
+                            foundSomethingInNetworkThatHadntBeenChecked = true;
+                            RefreshCellHashMap.Add(networkItem.cell, networkItem);
+                            IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(networkItem.cell, Rot4.North, new IntVec2(1, 1));
+
+                            foreach (IntVec3 adjCell in myCellAdjacencies)
+                            {
+                                if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain"))
+                                {
+                                    RegisterSingleConveyor(adjCell);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            RefreshCellHashMap.Clear();
+        }
+
+        /*
+        * Registers a single conveyor, while doing so it updates the network we're using for the network refresh.
+        */
+        public int RegisterSingleConveyor (IntVec3 newCell, bool isHub = false)
+        {
+            IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(newCell, Rot4.North, new IntVec2(1, 1));
+            bool addedNewCell = false;
+            int networkWereUsing = -1;
+
+            if (getNetwork(newCell) == -1)
             {
                 /*
-                 * 
-                 * For each adjacent cell, if it's a conveyor or a hub, search all networks for it.
-                 * If you find it, add our new cell to that network.
-                 * 
+                 * If it's a hub, add a new network
                  */
 
-                foreach (IntVec3 adjCell in myCellAdjacencies)
+                if (isHub)
                 {
-                    Log.Message($"[RegisterConveyor] Lets test adjacency at {adjCell.x}, {adjCell.z}...");
-                    Building building = map.edificeGrid[map.cellIndices.CellToIndex(adjCell)];
+                
+                    List<NetworkItem> newNetwork = new List<NetworkItem>();
+                    NetworkItem newNetworkItem = new NetworkItem(newCell, NetworksCache.Count, isHub, map.edificeGrid[map.cellIndices.CellToIndex(newCell)].GetComp<CompPowerTrader>());
+                    newNetwork.Add(newNetworkItem);
 
-                    if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain") || (building != null && building.def.defName.Contains("DuneRef_PeopleMover_PowerHub")))
-                    {
+                    // used for adj iterations
+                    networkWereUsing = NetworksCache.Count;
 
-                        int networkCellIsIn = getNetwork(adjCell);
-
-                        if (networkCellIsIn != -1)
-                        {
-                            NetworksCache[networkCellIsIn].Add(new NetworkItem(newCell));
-                            Log.Message($"[RegisterConveyor] Conveyor at {newCell.x}, {newCell.z} was registered into network {networkCellIsIn}");
-                            addedNewCell = true;
-                            adjCellThatConnectedUs = adjCell;
-                        }
-                    }
-                    else
-                    {
-                        Log.Message($"[RegisterConveyor] not terrain or hub...");
-                    }
-
-                    if (addedNewCell)
-                    {
-                        break;
-                    }
+                    // used for long term lookups
+                    NetworksCache.Add(newNetwork);
+                    CellHashMap[newCell] = newNetworkItem;
                 }
-            }
-
-            if (!addedNewCell)
-            {
-                Log.Message($"[RegisterConveyor] Conveyor at {newCell.x}, {newCell.z} could not be registered");
-            }
-
-            /*
-             * 
-             * If we added our new cell, let's see if any of it's adjacencies have unnetworked conveyors we can add.
-             * for each adj cell, if it's not the one that connected us before, and it's a conveyor, search the networks for it.
-             * If this adjacent cell, which is a conveyor, isn't in any networks, then we need to add it.
-             * But we also want to do this recursively so we'll call this function we're in again.
-             * Note: This does mean that I'm searching all the networks twice for each add after the original one.
-             * 
-             */
-
-            if (addedNewCell)
-            {
-                foreach (IntVec3 adjCell in myCellAdjacencies)
+                else
                 {
-                    Log.Message($"[RegisterConveyor] Lets test recursive adjacency at {adjCell.x}, {adjCell.z}...");
-                    if (adjCell != adjCellThatConnectedUs)
+                    /*
+                     * For each adjacent cell, if it's a conveyor or a hub, search all networks for it.
+                     * If you find it, add our new cell to that network.
+                     */
+                    foreach (IntVec3 adjCell in myCellAdjacencies)
                     {
-                        if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain"))
+                        if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain") || (map.edificeGrid[map.cellIndices.CellToIndex(adjCell)] != null && map.edificeGrid[map.cellIndices.CellToIndex(adjCell)].def.defName.Contains("DuneRef_PeopleMover_PowerHub")))
                         {
-                            if (getNetwork(adjCell) == -1)
+
+                            int networkCellIsIn = getNetwork(adjCell);
+
+                            if (networkCellIsIn != -1)
                             {
-                                Log.Message("$[RegisterConveyor] Doing a little bit of recursion");
-                                RegisterConveyor(adjCell);
+                                NetworkItem newNetworkItem = new NetworkItem(newCell, networkCellIsIn);
+
+                                // used for adj iterations
+                                networkWereUsing = networkCellIsIn;
+
+                                // used for long term lookups
+                                NetworksCache[networkCellIsIn].Add(newNetworkItem);
+                                CellHashMap[newCell] = newNetworkItem;
+
+                                addedNewCell = true;
                             }
-                        } else
+                        }
+
+                        if (addedNewCell)
                         {
-                            Log.Message($"[RegisterConveyor] not terrain...");
+                            break;
                         }
                     }
                 }
             }
+            
+
+            return networkWereUsing;
         }
 
-        public void DeregisterConveyor ()
+        /*
+         * On removal of terrain we just reregister the network instead of worrying about
+         * breaking off parts of the network manually
+         */
+        public void DeregisterConveyor (IntVec3 newCell, bool isHub = false)
         {
-
-        }
-
-        public int getNetwork(IntVec3 cellToCheck)
-        {
-            Log.Message($"[getNetwork]: {cellToCheck}");
-            int networkCellIsIn = -1;
+            bool foundCell = false;
 
             for (int i = 0; i < NetworksCache.Count; i++)
             {
-                List <NetworkItem> network = NetworksCache[i];
-                Log.Message($"[getNetwork]: Network {i}...");
+                List<NetworkItem> network = NetworksCache[i];
 
                 foreach (NetworkItem networkItem in network)
                 {
-                    Log.Message($"[getNetwork]: NetworkItem {networkItem.cell.x}, {networkItem.cell.z}...");
-                    Log.Message($"[getNetwork]: vs cellToCheck {cellToCheck.x}, {cellToCheck.z}...");
-                    if (networkItem.cell == cellToCheck)
+                    if (networkItem.cell == newCell)
                     {
-                        Log.Message($"[getNetwork]: Found in network {i}!");
-                        networkCellIsIn = i;
+                        ReregisterNetwork(network);
+
+                        foundCell = true;
                         break;
                     }
                 }
 
-                if (networkCellIsIn != -1)
+                if (foundCell)
                 {
                     break;
                 }
             }
+        }
 
-            if (networkCellIsIn == -1)
+        /*
+         * Clear hashmap and network list, then register the initial hub to get the whole network back from the start.
+         */
+        public void ReregisterNetwork (List<NetworkItem> network)
+        {
+            IntVec3 hubCell = new IntVec3(-1, -1, -1);
+
+            foreach (NetworkItem networkItem in network)
             {
-                Log.Message($"[getNetwork]: Not Found.");
+                if (networkItem.isHub)
+                {
+                    hubCell = networkItem.cell;
+                }
+
+                CellHashMap.Remove(networkItem.cell);
+            }
+
+            network.Clear();
+
+            if (hubCell != new IntVec3(-1, -1, -1))
+            {
+                RegisterConveyor(hubCell, true);
+            }
+        }
+
+        /*
+         * Searches Hash map of cells to see if it's in a network.
+         */
+        public int getNetwork(IntVec3 cellToCheck)
+        {
+            int networkCellIsIn = -1;
+            NetworkItem networkItem;
+
+            if (CellHashMap.TryGetValue(cellToCheck, out networkItem)) 
+            {
+                networkCellIsIn = networkItem.network;
             }
 
             return networkCellIsIn;
+        }
+    
+        public bool isCellsNetworkPowered(IntVec3 CellToCheck)
+        {
+            bool powered = false;
+
+            int networkIndex = getNetwork(CellToCheck);
+
+            if (networkIndex != -1)
+            {
+                for (int i = 0; i < NetworksCache[networkIndex].Count; i++)
+                {
+                    NetworkItem networkItem = NetworksCache[networkIndex][i];
+
+                    if (networkItem.isHub)
+                    {
+                        if (networkItem.powerComp != null)
+                        {
+                            powered = networkItem.powerComp.PowerOn;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+
+            return powered;
         }
     }
 }

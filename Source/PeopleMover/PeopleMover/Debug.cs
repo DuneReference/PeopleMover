@@ -21,8 +21,8 @@ namespace DuneRef_PeopleMover
 
                 for (int j = 0; j < network.Count; j++)
                 {
-                    Log.Message($"[DebugAction] network {i}, cell {network[j].cell}");
-                    Find.CurrentMap.debugDrawer.FlashCell(network[j].cell, 50, $"Net {i}", 500);
+                    // Log.Message($"[DebugAction] network {i}, cell {network[j].cell}");
+                    Find.CurrentMap.debugDrawer.FlashCell(network[j].cell, 50, $"Net {i}", 100);
                 }
             }
         }
