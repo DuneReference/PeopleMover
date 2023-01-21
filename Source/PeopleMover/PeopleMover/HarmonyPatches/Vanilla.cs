@@ -13,9 +13,6 @@ namespace DuneRef_PeopleMover
         public static readonly Type patchType = typeof(VanillaPatches);
         public static Harmony Harm = HarmonyPatches.Harm;
 
-        // used to hold terrain between RemoveTerrainFromNetworkPart1Fn and RemoveTerrainFromNetworkPart2Fn
-        public static TerrainDef terrainDef;
-
         // used to hold cache of map comps so FindPath is faster.
         public static Dictionary<int, PeopleMoverMapComp> mapsCompCache = new Dictionary<int, PeopleMoverMapComp>();
 
@@ -55,13 +52,16 @@ namespace DuneRef_PeopleMover
 
             /* Patch SetTerrain to add/remove movers to network */
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "SetTerrain"), postfix: new HarmonyMethod(patchType, nameof(AddNewTerrainToNetworkPostfix)));
-            Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), transpiler: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetwork)));
+            Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), prefix: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetworkPrefix)));
+            Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), postfix: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetworkPostfix)));
+
 
             /* Patch in my new PeopleMoverPowerComp into ConnectToPower */
             Harm.Patch(AccessTools.Method(typeof(ThingDef), "get_ConnectToPower"), postfix: new HarmonyMethod(patchType, nameof(AddPowerCompToConnectionListPostfix)));
 
         }
 
+        /* Utility functions */
         public static int GetPathCostFromBuildingRotVsPawnDir(int defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
         {
             int returningPathCost = defaultCost;
@@ -516,73 +516,20 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static IEnumerable<CodeInstruction> RemoveTerrainFromNetwork(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        public static bool RemoveTerrainFromNetworkPrefix(IntVec3 c, TerrainGrid __instance, out TerrainState __state)
         {
-            try
-            {
-                CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_0000: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_0001: ldfld class Verse.Map Verse.TerrainGrid::map
-                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
-                    // IL_0006: ldfld class Verse.CellIndices Verse.Map::cellIndices
-                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
-                    // IL_000b: ldarg.1
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_1),
-                    // IIL_000c: callvirt instance int32 Verse.CellIndices::CellToIndex(valuetype Verse.IntVec3)
-                    new CodeMatch(i => i.opcode == OpCodes.Callvirt),
-                    // IL_0011: stloc.0
-                    new CodeMatch(i => i.opcode == OpCodes.Stloc_0)
-                };
+            int mapIndex = __instance.map.cellIndices.CellToIndex(c);
 
-                CodeMatch[] desiredInstructions2 = new CodeMatch[]{
-                    // IL_0054: stelem.ref
-                    new CodeMatch(i => i.opcode == OpCodes.Stelem_Ref),
-                    // IL_0055: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_0056: ldarg.1
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_1),
-                    // IL_0057: call instance void Verse.TerrainGrid::DoTerrainChangedEffects(valuetype Verse.IntVec3)
-                    new CodeMatch(i => i.opcode == OpCodes.Call)
-                };
+            __state = new TerrainState(__instance.topGrid[mapIndex], __instance.underGrid[mapIndex]);
 
-                return new CodeMatcher(instructions, generator)
-                    .Start()
-                    .MatchEndForward(desiredInstructions)
-                    .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.RemoveTerrainFromNetworkPart1Fn))))
-                    .MatchEndForward(desiredInstructions2)
-                    .ThrowIfInvalid("Couldn't find the desired instructions2")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldarg_0))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldarg_1))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.RemoveTerrainFromNetworkPart2Fn))))
-                    .InstructionEnumeration();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[DuneRef_PeopleMover] : {ex}");
-                return instructions;
-            }
+            return true;
         }
 
-        public static void RemoveTerrainFromNetworkPart1Fn(TerrainGrid terrainGrid, int mapIndex)
+        public static void RemoveTerrainFromNetworkPostfix(IntVec3 c, TerrainGrid __instance, TerrainState __state)
         {
-            terrainDef = terrainGrid.topGrid[mapIndex];
-        }
-
-        public static void RemoveTerrainFromNetworkPart2Fn(TerrainGrid instance, IntVec3 c)
-        {
-            if (terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
+            if (__state.underTerrainDef != null && __state.terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
-                instance.map.GetComponent<PeopleMoverMapComp>().DeregisterMover(c);
+                __instance.map.GetComponent<PeopleMoverMapComp>().DeregisterMover(c);
             }
         }
 
@@ -600,6 +547,19 @@ namespace DuneRef_PeopleMover
                     }
                 }
             }
+        }
+    }
+
+    // used to hold terrain between RemoveTerrainFromNetworkPrefix and RemoveTerrainFromNetworkPostfix
+    public class TerrainState
+    {
+        public TerrainDef terrainDef;
+        public TerrainDef underTerrainDef;
+
+        public TerrainState(TerrainDef terrainDef, TerrainDef underTerrainDef)
+        {
+            this.terrainDef = terrainDef;
+            this.underTerrainDef = underTerrainDef;
         }
     }
 }

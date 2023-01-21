@@ -256,7 +256,6 @@ namespace DuneRef_PeopleMover
                 }
             }
 
-            Log.Message($"[isCellsNetworkPowered] {powered}");
             return powered;
         }
     }
