@@ -5,13 +5,6 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Verse.AI;
-using UnityEngine;
-using JetBrains.Annotations;
-using Verse.Noise;
-using System.Reflection;
-using System.Security.Cryptography;
-using RimWorld;
-using System.Linq;
 
 namespace DuneRef_PeopleMover
 {
@@ -20,16 +13,20 @@ namespace DuneRef_PeopleMover
         public static readonly Type patchType = typeof(VanillaPatches);
         public static Harmony Harm = HarmonyPatches.Harm;
 
+        // used to hold terrain between RemoveTerrainFromNetworkPart1Fn and RemoveTerrainFromNetworkPart2Fn
         public static TerrainDef terrainDef;
+
+        // used to hold cache of map comps so FindPath is faster.
+        public static Dictionary<int, PeopleMoverMapComp> mapsCompCache = new Dictionary<int, PeopleMoverMapComp>();
 
         public static void Patches()
         {
             // Patch CalculatedCostAt to allow PeopleMover's pathcost to make tiles pathcost lower than terrain's pathcost.
+            // this is used as an entry level pathCost calculator which the game caches. updated on game load and terrain change.
             Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInRepeaterSection)));
             Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInSnowSection)));
-            Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(PrintPathCostAtEnd)));
 
-            // Patch CostToMoveIntoCell for resolving speed
+            // Patch CostToMoveIntoCell for changing speed of pawn on the mover
             Harm.Patch(
                 AccessTools.Method(
                     typeof(Pawn_PathFollower), 
@@ -38,31 +35,14 @@ namespace DuneRef_PeopleMover
                 ), 
                 transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInEdificeSection)));
 
-            // Patch PathFinder
-            // change conveyers pathCost when it calculates buildings.
-            /*Harm.Patch(
-                AccessTools.Method(
-                    typeof(PathFinder),
-                    "GetBuildingCost",
-                    new Type[] { typeof(Building), typeof(TraverseParms), typeof(Pawn), typeof(PathFinderCostTuning) }
-                ),
-                transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostForConveyor)));*/
+            // Patch PathFinder to prioritize moving on correct direction movers, and do the opposite when not the correct direction.
             Harm.Patch(
                 AccessTools.Method(
                     typeof(PathFinder),
                     "FindPath",
                     new Type[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) }
                 ),
-                transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostForConveyor)));
-
-            // sanity check to make sure building pathCost doesn't send the current pathCost into the negatives which breaks pathing.
-/*            Harm.Patch(
-                AccessTools.Method(
-                    typeof(PathFinder),
-                    "FindPath",
-                    new Type[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) }
-                ),
-                transpiler: new HarmonyMethod(patchType, nameof(AfterBuildingCostSanityCheck)));*/
+                transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostForMover)));
 
             // Shows the red debug boxes.
             Harm.Patch(
@@ -73,9 +53,13 @@ namespace DuneRef_PeopleMover
                 ),
                 transpiler: new HarmonyMethod(patchType, nameof(PrintPathFinderInfo)));
 
-            /* Patch SetTerrain to add/remove conveyors to network */
+            /* Patch SetTerrain to add/remove movers to network */
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "SetTerrain"), postfix: new HarmonyMethod(patchType, nameof(AddNewTerrainToNetworkPostfix)));
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), transpiler: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetwork)));
+
+            /* Patch in my new PeopleMoverPowerComp into ConnectToPower */
+            Harm.Patch(AccessTools.Method(typeof(ThingDef), "get_ConnectToPower"), postfix: new HarmonyMethod(patchType, nameof(AddPowerCompToConnectionListPostfix)));
+
         }
 
         public static int GetPathCostFromBuildingRotVsPawnDir(int defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
@@ -134,13 +118,21 @@ namespace DuneRef_PeopleMover
                 return returningPathCost;
             }
 
-            Log.Message($"[{methodName}] rotation: {buildingRotation}, Coords: prevCell {prevCell.x},?,{prevCell.z} - newCell {newCell.x},?,{newCell.z}, newCost: {returningPathCost}");
             return returningPathCost;
         }
 
         public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(IntVec3 cell, Map map)
         {
-            return map.GetComponent<PeopleMoverMapComp>().isCellsNetworkPowered(cell);
+            
+            if (mapsCompCache.TryGetValue(map.uniqueID, out PeopleMoverMapComp mapComp))
+            {
+                return mapComp.isCellsNetworkPowered(cell);
+            } else
+            {
+                mapsCompCache[map.uniqueID] = map.GetComponent<PeopleMoverMapComp>();
+                return mapsCompCache[map.uniqueID].isCellsNetworkPowered(cell);
+            }
+
         }
 
         /* CalculatedCostAt */
@@ -186,7 +178,7 @@ namespace DuneRef_PeopleMover
         {
             int returningPathCost = buildingPathCost > terrainPathCost ? buildingPathCost : terrainPathCost;
 
-            if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.TryGetComp<CompPowerTrader>().PowerOn)
+            if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.TryGetComp<PeopleMoverPowerComp>().PowerOn)
             {
                 if (buildingPathCost < terrainPathCost)
                 {
@@ -251,7 +243,7 @@ namespace DuneRef_PeopleMover
             {
                 if (building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub")
                 {
-                    if (building.TryGetComp<CompPowerTrader>().PowerOn)
+                    if (building.TryGetComp<PeopleMoverPowerComp>().PowerOn)
                     {
                         returningPathCost = runningPathCost;
                     }
@@ -323,7 +315,7 @@ namespace DuneRef_PeopleMover
 
             if (building != null) 
             {
-                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<CompPowerTrader>().PowerOn)
+                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
                 {
                     int pathCost = PeopleMoverSettings.movespeedPathCost;
 
@@ -367,7 +359,7 @@ namespace DuneRef_PeopleMover
         }
 
         /* PathFinder */
-        public static IEnumerable<CodeInstruction> ChangePathCostForConveyor(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        public static IEnumerable<CodeInstruction> ChangePathCostForMover(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             try
             {
@@ -411,7 +403,7 @@ namespace DuneRef_PeopleMover
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldarg_2))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostForConveyorFn))))
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostForMoverFn))))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Stloc_S, 48))
                     .InstructionEnumeration();
@@ -423,15 +415,15 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static int ChangePathCostForConveyorFn(int pathCost, int mapIndex, Building building, Pawn pawn, LocalTargetInfo dest)
+        public static int ChangePathCostForMoverFn(int pathCost, int mapIndex, Building building, Pawn pawn, LocalTargetInfo dest)
         {
             int returningPathCost = pathCost;
 
             if (building != null)
             {
-                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<CompPowerTrader>().PowerOn)
+                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
                 {
-                    returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(returningPathCost, building.Rotation, building.Position, pawn.Position, "ChangePathCostForConveyor_Building");
+                    returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(returningPathCost, building.Rotation, building.Position, pawn.Position, "ChangePathCostForMover_Building");
                 }
             } else
             {
@@ -456,57 +448,12 @@ namespace DuneRef_PeopleMover
                             rotation = Rot4.West;
                         }
 
-                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, dest.Cell, pawn.Position, "ChangePathCostForConveyor_Terrain");
+                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, dest.Cell, pawn.Position, "ChangePathCostForMover_Terrain");
                     }
                 }
             }
 
             return returningPathCost < 0 ? 0 : returningPathCost;
-        }
-
-        public static IEnumerable<CodeInstruction> AfterBuildingCostSanityCheck(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            try
-            {
-                CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_08d2: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_08d3: call instance void Verse.AI.PathFinder::PfProfilerEndSample()
-                    new CodeMatch(i => i.opcode == OpCodes.Call),
-                    // IL_08d8: br IL_0be1
-                    new CodeMatch(i => i.opcode == OpCodes.Br),
-                    // IL_08dd: ldloc.s 48
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_08df: ldloc.s 54
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_08e1: add
-                    new CodeMatch(i => i.opcode == OpCodes.Add),
-                    // IL_08e2: stloc.s 48
-                    new CodeMatch(i => i.opcode == OpCodes.Stloc_S)
-                };
-
-                return new CodeMatcher(instructions, generator)
-                    .Start()
-                    .MatchEndForward(desiredInstructions)
-                    .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 48))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.AfterBuildingCostSanityCheckFn))))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Stloc_S, 48))
-                    .InstructionEnumeration();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[DuneRef_PeopleMover] : {ex}");
-                return instructions;
-            }
-        }
-
-        public static int AfterBuildingCostSanityCheckFn(int pathCost)
-        {
-            return pathCost < 0 ? 0 : pathCost;
         }
 
         public static IEnumerable<CodeInstruction> PrintPathFinderInfo(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -540,8 +487,6 @@ namespace DuneRef_PeopleMover
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_S, 49))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 53))
-                    .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_0))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.PrintPathFinderInfoFn))))
@@ -554,74 +499,20 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static void PrintPathFinderInfoFn(int mapIndex, int knownCost, Building building, Pawn pawn)
+        public static void PrintPathFinderInfoFn(int mapIndex, int knownCost, Pawn pawn)
         {
-            TerrainDef terrain = pawn.Map.terrainGrid.topGrid[mapIndex];
-            //Log.Message($"[FindPath] terrain: {terrain.defName}");
-
-            if (building != null && building.def.defName.Contains("DuneRef_PeopleMover"))
-            {
-                //Log.Message($"[FindPath] bulding: {building.def.defName} finalCost: {knownCost}");
-            }
-            else if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
-            {
-               // Log.Message($"[FindPath] terrain: {terrain.defName} finalCost: {knownCost}");
-            }
-
             if (PeopleMoverSettings.showFlashingPathCost)
             {
                 pawn.Map.debugDrawer.FlashCell(pawn.Map.cellIndices.IndexToCell(mapIndex), knownCost, knownCost.ToString());
             }
         }
 
-        public static IEnumerable<CodeInstruction> PrintPathCostAtEnd(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            try
-            {
-                CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // 
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_0),
-                    // 
-                    new CodeMatch(i => i.opcode == OpCodes.Ret)
-                };
-
-                return new CodeMatcher(instructions, generator)
-                    .Start()
-                    .MatchStartForward(desiredInstructions)
-                    .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 6))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 2))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.PrintPathCostAtEndFn))))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
-                    .InstructionEnumeration();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[DuneRef_PeopleMover] : {ex}");
-                return instructions;
-            }
-        }
-
-        public static void PrintPathCostAtEndFn(int finalCost, Thing building, TerrainDef terrain)
-        {
-            if (building != null && building.def.defName.Contains("DuneRef_PeopleMover"))
-            {
-                // Log.Message($"[CalculatedCostAt] bulding: {building.def.defName} finalCost: {finalCost}");
-            } else if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
-            {
-                // Log.Message($"[CalculatedCostAt] terrain: {terrain.defName} finalCost: {finalCost}");
-            }
-        }
-
+        /* Terrain Patches */
         public static void AddNewTerrainToNetworkPostfix(IntVec3 c, TerrainDef newTerr, TerrainGrid __instance)
         {
             if (newTerr.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
-                __instance.map.GetComponent<PeopleMoverMapComp>().RegisterConveyor(c);
+                __instance.map.GetComponent<PeopleMoverMapComp>().RegisterMover(c);
             }
         }
 
@@ -691,7 +582,23 @@ namespace DuneRef_PeopleMover
         {
             if (terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
-                instance.map.GetComponent<PeopleMoverMapComp>().DeregisterConveyor(c);
+                instance.map.GetComponent<PeopleMoverMapComp>().DeregisterMover(c);
+            }
+        }
+
+        /* Power Comp Patches */
+
+        public static void AddPowerCompToConnectionListPostfix(ref bool __result, ThingDef __instance)
+        {
+            if(__result != true && !__instance.EverTransmitsPower)
+            {
+                for (int i = 0; i < __instance.comps.Count; i++)
+                {
+                    if (__instance.comps[i].compClass == typeof(PeopleMoverPowerComp))
+                    {
+                        __result = true;
+                    }
+                }
             }
         }
     }

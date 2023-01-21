@@ -1,20 +1,36 @@
-﻿using Verse;
-using System;
-using RimWorld;
-using System.Collections;
+﻿using RimWorld;
+using Verse;
 
 namespace DuneRef_PeopleMover
 {
     public class PeopleMoverPowerHubComp : ThingComp
     {
+        public PeopleMoverMapComp mapComp;
+        public IntVec3 cell = new IntVec3(-1, -1, -1);
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
 
-            PeopleMoverMapComp mapComp = parent.Map.GetComponent<PeopleMoverMapComp>();
+            /*
+             * Adds hubs at start of game which search out for their whole network
+             */
 
-            Log.Message($"[PostSpawnSetup] Adding hub from comp located at {parent.Position.x},{parent.Position.z}");
-            mapComp.RegisterConveyor(parent.Position, true);
+            mapComp = parent.Map.GetComponent<PeopleMoverMapComp>();
+            cell = parent.Position;
+
+            mapComp.RegisterMover(cell, true);
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+
+            /*
+             * When hubs are removed, their network is destroyed
+             */
+
+            mapComp.DeregisterMover(cell, true);
         }
     }
 }

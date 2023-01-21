@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comps\PeopleMoverPowerComp.cs" />
     <Compile Include="Comps\PeopleMoverMapComp.cs" />
     <Compile Include="Comps\PeopleMoverPowerHubComp.cs" />
     <Compile Include="HarmonyPatches\Vanilla.cs" />

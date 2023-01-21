@@ -13,7 +13,7 @@ namespace DuneRef_PeopleMover
         [DebugAction("PeopleMover", null, allowedGameStates = AllowedGameStates.PlayingOnMap)]
         public static void PrintNetworks()
         {
-            var networksCache = Find.CurrentMap.GetComponent<PeopleMoverMapComp>().NetworksCache;
+            var networksCache = Find.CurrentMap.GetComponent<PeopleMoverMapComp>().networksCache;
 
             for (int i = 0; i < networksCache.Count; i++)
             {

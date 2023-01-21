@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
+    <DesignatorDropdownGroupDef>
+        <defName>DuneRef_PeopleMover_Terrain</defName>
+    </DesignatorDropdownGroupDef>
+
     <TerrainDef Name="DuneRef_PeopleMover_Terrain_Base" Abstract="True">
-        <description>Move People, but faster.</description>
+        <description>Move People, but faster. Must be connected adjacently to a PeopleMover Power Hub to be active. Tip: Use right click on this architect menu option for more directional variants.</description>
+        <designatorDropdown>DuneRef_PeopleMover_Terrain</designatorDropdown>
         <fertility>0.0</fertility>
         <edgeType>Hard</edgeType>
         <layerable>true</layerable>
@@ -12,15 +17,19 @@
         <statBases>
             <Beauty>-0.5</Beauty>
             <Mass>10</Mass>
-            <MaxHitPoints>80</MaxHitPoints>
-            <WorkToBuild>100</WorkToBuild>
+            <WorkToBuild>2000</WorkToBuild>
+            <Flammability>0</Flammability>
         </statBases>
-        <designationCategory>Misc</designationCategory>
+        <designationCategory>Floors</designationCategory>
         <costList>
-            <Steel>5</Steel>
+            <Steel>8</Steel>
         </costList>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
         <pathCost>0</pathCost>
+        <filthAcceptanceMask>
+            <li>None</li>
+        </filthAcceptanceMask>
+        <holdSnow>false</holdSnow>
     </TerrainDef>
 
     <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">

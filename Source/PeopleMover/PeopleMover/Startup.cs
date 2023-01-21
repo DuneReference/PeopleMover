@@ -47,7 +47,7 @@ namespace DuneRef_PeopleMover
             listingStandard.Label($"{PeopleMoverSettings.movespeedPathCost} Path cost: ~{(38 - PeopleMoverSettings.movespeedPathCost) * 13} % walk speed");
             listingStandard.IntAdjuster(ref PeopleMoverSettings.movespeedPathCost, 1, 0);
             listingStandard.Label("Advanced:");
-            listingStandard.CheckboxLabeled("Explicitly specify the pathCost increment of the mover.", ref PeopleMoverSettings.useExplicitPathingPathCost, "How much pawns prioritize/deprioritize walking on conveyors depending in direction.");
+            listingStandard.CheckboxLabeled("Explicitly specify the pathCost increment of the mover.", ref PeopleMoverSettings.useExplicitPathingPathCost, "How much pawns prioritize/deprioritize walking on movers depending in direction.");
             listingStandard.Label($"{PeopleMoverSettings.pathingPathCost}");
             listingStandard.IntAdjuster(ref PeopleMoverSettings.pathingPathCost, 1, -50);
             listingStandard.Label("Dev:");

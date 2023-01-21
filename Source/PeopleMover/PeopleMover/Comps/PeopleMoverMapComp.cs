@@ -1,10 +1,5 @@
-﻿using RimWorld;
-using Verse;
-using RimWorld.Planet;
+﻿using Verse;
 using System.Collections.Generic;
-using System.Linq;
-using Verse.Noise;
-using System.Collections;
 
 namespace DuneRef_PeopleMover
 {
@@ -13,9 +8,9 @@ namespace DuneRef_PeopleMover
         public IntVec3 cell;
         public int network;
         public bool isHub;
-        public CompPowerTrader powerComp;
+        public PeopleMoverPowerComp powerComp;
 
-        public NetworkItem(IntVec3 cell, int network, bool isHub = false, CompPowerTrader powerComp = null)
+        public NetworkItem(IntVec3 cell, int network, bool isHub = false, PeopleMoverPowerComp powerComp = null)
         {
             this.cell = cell;
             this.isHub = isHub;
@@ -26,11 +21,18 @@ namespace DuneRef_PeopleMover
 
     public class PeopleMoverMapComp : MapComponent
     {
-        public List<List<NetworkItem>> NetworksCache = new List<List<NetworkItem>>();
-        public Dictionary<IntVec3, NetworkItem> CellHashMap = new Dictionary<IntVec3, NetworkItem>();
+        // holds all the networks and all the cells in them
+        public List<List<NetworkItem>> networksCache = new List<List<NetworkItem>>();
 
-        // Used for network checking on add
-        public Dictionary<IntVec3, NetworkItem> RefreshCellHashMap = new Dictionary<IntVec3, NetworkItem>();
+        // speeds up finding the hub in a network
+        public Dictionary<int, NetworkItem> networksHubCache = new Dictionary<int, NetworkItem>();
+
+        // speeds up finding a specific cell in the network
+        public Dictionary<IntVec3, NetworkItem> cellHashMap = new Dictionary<IntVec3, NetworkItem>();
+
+        // On network item add it searches the whole network and then does it again each time it adds something while searching
+        // this stops us from checking the same cells every time it reloops through the network.
+        public Dictionary<IntVec3, NetworkItem> refreshCellHashMap = new Dictionary<IntVec3, NetworkItem>();
 
         public PeopleMoverMapComp(Map map) : base(map)
         {
@@ -38,12 +40,12 @@ namespace DuneRef_PeopleMover
         }
 
         /*
-         * Registers the conveyor specified and then checks the network to make sure
+         * Registers the mover specified and then checks the network to make sure
          * it has everything possibly connected now.
          */
-        public void RegisterConveyor (IntVec3 newCell, bool isHub = false)
+        public void RegisterMover (IntVec3 newCell, bool isHub = false)
         {
-            int networkWereUsing = RegisterSingleConveyor(newCell, isHub);
+            int networkWereUsing = RegisterSingleMover(newCell, isHub);
 
             /*
              * Each time something is added we recheck the whole network so we can
@@ -53,8 +55,7 @@ namespace DuneRef_PeopleMover
             // if something was added
             if (networkWereUsing != -1)
             {
-                // as long as 1 of the 4 adj didn't return a -1
-                List<NetworkItem> network = NetworksCache[networkWereUsing];
+                List<NetworkItem> network = networksCache[networkWereUsing];
 
                 bool foundSomethingInNetworkThatHadntBeenChecked = true;
 
@@ -66,17 +67,17 @@ namespace DuneRef_PeopleMover
                     {
                         NetworkItem networkItem = network[i];
 
-                        if (!RefreshCellHashMap.TryGetValue(networkItem.cell, out _))
+                        if (!refreshCellHashMap.TryGetValue(networkItem.cell, out _))
                         {
                             foundSomethingInNetworkThatHadntBeenChecked = true;
-                            RefreshCellHashMap.Add(networkItem.cell, networkItem);
+                            refreshCellHashMap.Add(networkItem.cell, networkItem);
                             IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(networkItem.cell, Rot4.North, new IntVec2(1, 1));
 
                             foreach (IntVec3 adjCell in myCellAdjacencies)
                             {
                                 if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain"))
                                 {
-                                    RegisterSingleConveyor(adjCell);
+                                    RegisterSingleMover(adjCell);
                                 }
                             }
 
@@ -86,13 +87,13 @@ namespace DuneRef_PeopleMover
                 }
             }
 
-            RefreshCellHashMap.Clear();
+            refreshCellHashMap.Clear();
         }
 
         /*
-        * Registers a single conveyor, while doing so it updates the network we're using for the network refresh.
+        * Registers a single mover, while doing so it updates the network we're using for the network refresh.
         */
-        public int RegisterSingleConveyor (IntVec3 newCell, bool isHub = false)
+        public int RegisterSingleMover (IntVec3 newCell, bool isHub = false)
         {
             IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(newCell, Rot4.North, new IntVec2(1, 1));
             bool addedNewCell = false;
@@ -108,20 +109,21 @@ namespace DuneRef_PeopleMover
                 {
                 
                     List<NetworkItem> newNetwork = new List<NetworkItem>();
-                    NetworkItem newNetworkItem = new NetworkItem(newCell, NetworksCache.Count, isHub, map.edificeGrid[map.cellIndices.CellToIndex(newCell)].GetComp<CompPowerTrader>());
+                    NetworkItem newNetworkItem = new NetworkItem(newCell, networksCache.Count, isHub, map.edificeGrid[map.cellIndices.CellToIndex(newCell)].GetComp<PeopleMoverPowerComp>());
                     newNetwork.Add(newNetworkItem);
+                    networksHubCache[networksCache.Count] = newNetworkItem;
 
                     // used for adj iterations
-                    networkWereUsing = NetworksCache.Count;
+                    networkWereUsing = networksCache.Count;
 
                     // used for long term lookups
-                    NetworksCache.Add(newNetwork);
-                    CellHashMap[newCell] = newNetworkItem;
+                    networksCache.Add(newNetwork);
+                    cellHashMap[newCell] = newNetworkItem;
                 }
                 else
                 {
                     /*
-                     * For each adjacent cell, if it's a conveyor or a hub, search all networks for it.
+                     * For each adjacent cell, if it's a mover or a hub, search all networks for it.
                      * If you find it, add our new cell to that network.
                      */
                     foreach (IntVec3 adjCell in myCellAdjacencies)
@@ -139,8 +141,12 @@ namespace DuneRef_PeopleMover
                                 networkWereUsing = networkCellIsIn;
 
                                 // used for long term lookups
-                                NetworksCache[networkCellIsIn].Add(newNetworkItem);
-                                CellHashMap[newCell] = newNetworkItem;
+                                networksCache[networkCellIsIn].Add(newNetworkItem);
+                                cellHashMap[newCell] = newNetworkItem;
+
+                                // update power on hub
+                                PeopleMoverPowerComp powerComp = networksHubCache[networkCellIsIn].powerComp;
+                                powerComp.UpdateDesiredPowerOutput(powerComp.desiredPowerOutput + 10f);
 
                                 addedNewCell = true;
                             }
@@ -160,38 +166,38 @@ namespace DuneRef_PeopleMover
 
         /*
          * On removal of terrain we just reregister the network instead of worrying about
-         * breaking off parts of the network manually
+         * breaking off parts of the network manually. If the hub is removed, just clear the network.
          */
-        public void DeregisterConveyor (IntVec3 newCell, bool isHub = false)
+        public void DeregisterMover (IntVec3 newCell, bool isHub = false)
         {
-            bool foundCell = false;
-
-            for (int i = 0; i < NetworksCache.Count; i++)
+            if (cellHashMap.TryGetValue(newCell, out NetworkItem networkItem))
             {
-                List<NetworkItem> network = NetworksCache[i];
-
-                foreach (NetworkItem networkItem in network)
+                if (isHub)
                 {
-                    if (networkItem.cell == newCell)
-                    {
-                        ReregisterNetwork(network);
-
-                        foundCell = true;
-                        break;
-                    }
-                }
-
-                if (foundCell)
+                    ClearNetwork(networksCache[networkItem.network]);
+                } else
                 {
-                    break;
+                    IntVec3 hubCell = ClearNetwork(networksCache[networkItem.network]);
+                    ReregisterNetwork(hubCell);
                 }
             }
         }
 
         /*
-         * Clear hashmap and network list, then register the initial hub to get the whole network back from the start.
+         * register the initial hub to get the whole network back from the start.
          */
-        public void ReregisterNetwork (List<NetworkItem> network)
+        public void ReregisterNetwork (IntVec3 hubCell)
+        {
+            if (hubCell != new IntVec3(-1, -1, -1))
+            {
+                RegisterMover(hubCell, true);
+            }
+        }
+
+        /*
+         * Clear hashmap and network list, and return the hubcell in case of reregistering the network.
+         */
+        public IntVec3 ClearNetwork(List<NetworkItem> network)
         {
             IntVec3 hubCell = new IntVec3(-1, -1, -1);
 
@@ -200,17 +206,19 @@ namespace DuneRef_PeopleMover
                 if (networkItem.isHub)
                 {
                     hubCell = networkItem.cell;
+                    networksHubCache.Remove(networkItem.network);
+
+                    // Reset power consumption for hub
+                    PeopleMoverPowerComp powerComp = networkItem.powerComp;
+                    powerComp.UpdateDesiredPowerOutput(10f);
                 }
 
-                CellHashMap.Remove(networkItem.cell);
+                cellHashMap.Remove(networkItem.cell);
             }
 
             network.Clear();
 
-            if (hubCell != new IntVec3(-1, -1, -1))
-            {
-                RegisterConveyor(hubCell, true);
-            }
+            return hubCell;
         }
 
         /*
@@ -221,7 +229,7 @@ namespace DuneRef_PeopleMover
             int networkCellIsIn = -1;
             NetworkItem networkItem;
 
-            if (CellHashMap.TryGetValue(cellToCheck, out networkItem)) 
+            if (cellHashMap.TryGetValue(cellToCheck, out networkItem)) 
             {
                 networkCellIsIn = networkItem.network;
             }
@@ -229,6 +237,9 @@ namespace DuneRef_PeopleMover
             return networkCellIsIn;
         }
     
+        /*
+         * Finds the hub of this cells network and checks its power status
+         */
         public bool isCellsNetworkPowered(IntVec3 CellToCheck)
         {
             bool powered = false;
@@ -237,22 +248,15 @@ namespace DuneRef_PeopleMover
 
             if (networkIndex != -1)
             {
-                for (int i = 0; i < NetworksCache[networkIndex].Count; i++)
-                {
-                    NetworkItem networkItem = NetworksCache[networkIndex][i];
+                NetworkItem networkItem = networksHubCache[networkIndex];
 
-                    if (networkItem.isHub)
-                    {
-                        if (networkItem.powerComp != null)
-                        {
-                            powered = networkItem.powerComp.PowerOn;
-                        }
-                        
-                        break;
-                    }
+                if (networkItem.powerComp != null)
+                {
+                    powered = networkItem.powerComp.PowerOn;
                 }
             }
 
+            Log.Message($"[isCellsNetworkPowered] {powered}");
             return powered;
         }
     }

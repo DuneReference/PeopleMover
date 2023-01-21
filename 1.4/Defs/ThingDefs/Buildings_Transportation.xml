@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <ThingDef>
+    <!-- <ThingDef>
         <defName>DuneRef_PeopleMover</defName>
         <label>People Mover</label>
-        <description>Move People, but faster.</description>
+        <description>Move People, but faster. Very simple to use, plug and play. Transmits power along itself. Because each mover is a building, in very large numbers it could cause slowdown. An alternative is the PeopleMover Power Hub and connected terrains which accomplishes the same goal, but more performant; downside being it's more complicated and doesn't transmit power along itself. </description>
         <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon</uiIconPath>
         <graphicData>
             <texPath>Things/Buildings/PeopleMover/PeopleMover_Arrow_640x640</texPath>
@@ -44,6 +44,7 @@
         <passability>Standable</passability>
         <rotatable>true</rotatable>
         <drawGUIOverlay>true</drawGUIOverlay>
+        <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
         <placeWorkers>
             <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
         </placeWorkers>
@@ -51,22 +52,31 @@
             <li Class="CompProperties_Power">
                 <compClass>CompPowerTrader</compClass>
                 <basePowerConsumption>10</basePowerConsumption>
-                <transmitsPower>true</transmitsPower>
+                <transmitsPower>false</transmitsPower>
                 <shortCircuitInRain>false</shortCircuitInRain>
             </li>
             <li Class="CompProperties_Flickable"/>
         </comps>
         <tradeability>None</tradeability>
-        <placingDraggableDimensions>1</placingDraggableDimensions> 
-    </ThingDef>
+        <placingDraggableDimensions>2</placingDraggableDimensions>
+        <building>
+            <blueprintGraphicData>
+                <texPath>Things/Buildings/PeopleMover/PeopleMover_Arrow_Blueprint_640x640</texPath>
+                <graphicClass>Graphic_Multi</graphicClass>
+                <drawRotated>true</drawRotated>
+                <drawSize>(1, 1)</drawSize>
+            </blueprintGraphicData>
+        </building>
+    </ThingDef> -->
 
     <ThingDef>
         <defName>DuneRef_PeopleMover_PowerHub</defName>
         <label>People Mover Power Hub</label>
-        <description>Move People, but faster.</description>
+        <!-- <description>Move People, but faster. This is a hub that you can connect the various directional PeopleMover terrains to. Much better for performance when used in large numbers compared to the building version. but also doesn't transmit power along itself.</description> -->
+        <description>Move People, but faster. This is a hub that you can connect the various directional PeopleMover terrains to.</description>
         <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon</uiIconPath>
         <graphicData>
-            <texPath>Things/Buildings/PeopleMover/PeopleMover_Arrow_640x640</texPath>
+            <texPath>Things/Buildings/PeopleMover/PeopleMover_PowerHub_640x640</texPath>
             <graphicClass>Graphic_Multi</graphicClass>
             <drawRotated>true</drawRotated>
             <drawSize>(1, 1)</drawSize>
@@ -89,12 +99,13 @@
             <Mass>10</Mass>
             <Flammability>0.4</Flammability>
             <MaxHitPoints>80</MaxHitPoints>
-            <WorkToBuild>100</WorkToBuild>
+            <WorkToBuild>2800</WorkToBuild>
         </statBases>
-        <designationCategory>Misc</designationCategory>
+        <designationCategory>Floors</designationCategory>
         <uiIconScale>0.8</uiIconScale>
         <costList>
-            <Steel>5</Steel>
+            <Steel>20</Steel>
+            <ComponentIndustrial>2</ComponentIndustrial>
         </costList>
         <clearBuildingArea>false</clearBuildingArea>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
@@ -103,14 +114,15 @@
         <passability>Standable</passability>
         <rotatable>true</rotatable>
         <drawGUIOverlay>true</drawGUIOverlay>
+        <drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
         <placeWorkers>
             <li>DuneRef_PeopleMover.PlaceWorker_Arrow</li>
         </placeWorkers>
         <comps>
             <li Class="CompProperties_Power">
-                <compClass>CompPowerTrader</compClass>
+                <compClass>DuneRef_PeopleMover.PeopleMoverPowerComp</compClass>
                 <basePowerConsumption>10</basePowerConsumption>
-                <transmitsPower>true</transmitsPower>
+                <transmitsPower>false</transmitsPower>
                 <shortCircuitInRain>false</shortCircuitInRain>
             </li>
             <li Class="CompProperties_Flickable" />
@@ -119,7 +131,14 @@
             </li>
         </comps>
         <tradeability>None</tradeability>
-        <placingDraggableDimensions>1</placingDraggableDimensions> 
+        <building>
+            <blueprintGraphicData>
+                <texPath>Things/Buildings/PeopleMover/PeopleMover_PowerHub_Blueprint_640x640</texPath>
+                <graphicClass>Graphic_Multi</graphicClass>
+                <drawRotated>true</drawRotated>
+                <drawSize>(1, 1)</drawSize>
+            </blueprintGraphicData>
+        </building>
     </ThingDef>
 
 </Defs>
