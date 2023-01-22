@@ -5,6 +5,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Verse.AI;
+using System.Reflection;
 
 namespace DuneRef_PeopleMover
 {
@@ -123,16 +124,14 @@ namespace DuneRef_PeopleMover
 
         public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(IntVec3 cell, Map map)
         {
-            
             if (mapsCompCache.TryGetValue(map.uniqueID, out PeopleMoverMapComp mapComp))
             {
-                return mapComp.isCellsNetworkPowered(cell);
+                return mapComp.IsCellsNetworkPowered(cell);
             } else
             {
                 mapsCompCache[map.uniqueID] = map.GetComponent<PeopleMoverMapComp>();
-                return mapsCompCache[map.uniqueID].isCellsNetworkPowered(cell);
+                return mapsCompCache[map.uniqueID].IsCellsNetworkPowered(cell);
             }
-
         }
 
         /* CalculatedCostAt */

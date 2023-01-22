@@ -45,6 +45,7 @@ namespace DuneRef_PeopleMover
          */
         public void RegisterMover (IntVec3 newCell, bool isHub = false)
         {
+            // Log.Message($"[RegisterMover] registering mover; cell: {newCell}, isHub {isHub}");
             int networkWereUsing = RegisterSingleMover(newCell, isHub);
 
             /*
@@ -95,6 +96,7 @@ namespace DuneRef_PeopleMover
         */
         public int RegisterSingleMover (IntVec3 newCell, bool isHub = false)
         {
+            // Log.Message($"[RegisterSingleMover] registering single mover cell: {newCell}, isHub {isHub}");
             IEnumerable<IntVec3> myCellAdjacencies = GenAdj.CellsAdjacentCardinal(newCell, Rot4.North, new IntVec2(1, 1));
             bool addedNewCell = false;
             int networkWereUsing = -1;
@@ -107,16 +109,15 @@ namespace DuneRef_PeopleMover
 
                 if (isHub)
                 {
-                
                     List<NetworkItem> newNetwork = new List<NetworkItem>();
                     NetworkItem newNetworkItem = new NetworkItem(newCell, networksCache.Count, isHub, map.edificeGrid[map.cellIndices.CellToIndex(newCell)].GetComp<PeopleMoverPowerComp>());
                     newNetwork.Add(newNetworkItem);
-                    networksHubCache[networksCache.Count] = newNetworkItem;
-
+                    
                     // used for adj iterations
                     networkWereUsing = networksCache.Count;
 
                     // used for long term lookups
+                    networksHubCache[networksCache.Count] = newNetworkItem;
                     networksCache.Add(newNetwork);
                     cellHashMap[newCell] = newNetworkItem;
                 }
@@ -145,6 +146,7 @@ namespace DuneRef_PeopleMover
                                 cellHashMap[newCell] = newNetworkItem;
 
                                 // update power on hub
+                                // Log.Message($"[RegisterSingleMover] adding power output for mover; cell: {newCell}, isHub {isHub}");
                                 PeopleMoverPowerComp powerComp = networksHubCache[networkCellIsIn].powerComp;
                                 powerComp.UpdateDesiredPowerOutput(powerComp.desiredPowerOutput + 10f);
 
@@ -159,7 +161,6 @@ namespace DuneRef_PeopleMover
                     }
                 }
             }
-            
 
             return networkWereUsing;
         }
@@ -170,6 +171,7 @@ namespace DuneRef_PeopleMover
          */
         public void DeregisterMover (IntVec3 newCell, bool isHub = false)
         {
+            // Log.Message($"[DeregisterMover] deregistering mover...");
             if (cellHashMap.TryGetValue(newCell, out NetworkItem networkItem))
             {
                 if (isHub)
@@ -188,6 +190,7 @@ namespace DuneRef_PeopleMover
          */
         public void ReregisterNetwork (IntVec3 hubCell)
         {
+            // Log.Message($"[ReregisterNetwork] Reregistering network...");
             if (hubCell != new IntVec3(-1, -1, -1))
             {
                 RegisterMover(hubCell, true);
@@ -199,6 +202,7 @@ namespace DuneRef_PeopleMover
          */
         public IntVec3 ClearNetwork(List<NetworkItem> network)
         {
+            // Log.Message($"[ClearNetwork] Clearing network...");
             IntVec3 hubCell = new IntVec3(-1, -1, -1);
 
             foreach (NetworkItem networkItem in network)
@@ -209,6 +213,7 @@ namespace DuneRef_PeopleMover
                     networksHubCache.Remove(networkItem.network);
 
                     // Reset power consumption for hub
+                    // Log.Message($"[ClearNetwork] reseting power output for mover; cell: {hubCell}, isHub {networkItem.isHub}");
                     PeopleMoverPowerComp powerComp = networkItem.powerComp;
                     powerComp.UpdateDesiredPowerOutput(10f);
                 }
@@ -240,7 +245,7 @@ namespace DuneRef_PeopleMover
         /*
          * Finds the hub of this cells network and checks its power status
          */
-        public bool isCellsNetworkPowered(IntVec3 CellToCheck)
+        public bool IsCellsNetworkPowered(IntVec3 CellToCheck)
         {
             bool powered = false;
 
@@ -256,6 +261,7 @@ namespace DuneRef_PeopleMover
                 }
             }
 
+            // Log.Message($"[IsCellsNetworkPowered] {CellToCheck}; {powered}");
             return powered;
         }
     }

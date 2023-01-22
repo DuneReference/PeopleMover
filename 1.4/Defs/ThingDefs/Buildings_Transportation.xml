@@ -109,6 +109,7 @@
         </costList>
         <clearBuildingArea>false</clearBuildingArea>
         <constructionSkillPrerequisite>5</constructionSkillPrerequisite>
+        <tickerType>Normal</tickerType>
         <size>(1,1)</size>
         <pathCost>0</pathCost>
         <passability>Standable</passability>

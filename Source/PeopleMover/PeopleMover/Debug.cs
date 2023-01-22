@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System.Collections.Generic;
 using Verse;
 
 namespace DuneRef_PeopleMover
@@ -21,9 +22,21 @@ namespace DuneRef_PeopleMover
 
                 for (int j = 0; j < network.Count; j++)
                 {
-                    // Log.Message($"[DebugAction] network {i}, cell {network[j].cell}");
                     Find.CurrentMap.debugDrawer.FlashCell(network[j].cell, 50, $"Net {i}", 100);
                 }
+            }
+        }
+
+        [DebugAction("PeopleMover", null, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        public static void PrintNetworksHubCache()
+        {
+            var networksHubCache = Find.CurrentMap.GetComponent<PeopleMoverMapComp>().networksHubCache;
+
+            Log.Message($"[DebugAction] Printing just networksHubCache");
+
+            foreach (KeyValuePair<int, NetworkItem> entry in networksHubCache)
+            {
+                Log.Message($"[DebugAction] network {entry.Key}, cell {entry.Value.cell}, isHub? {entry.Value.isHub}");
             }
         }
     }
