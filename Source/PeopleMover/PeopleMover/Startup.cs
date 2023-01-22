@@ -13,19 +13,19 @@ namespace DuneRef_PeopleMover
 
     public class PeopleMoverSettings : ModSettings
     {
-        public static int movespeedPathCost;
+        public static int movespeedPathCost = 26;
 
-        public static bool useExplicitPathingPathCost;
-        public static int pathingPathCost;
+        public static bool useExplicitPathingPathCost = false;
+        public static int pathingPathCost = 20;
 
-        public static bool showFlashingPathCost;
+        public static bool showFlashingPathCost = false;
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref movespeedPathCost, "additionalPathCost", 6);
-            Scribe_Values.Look(ref useExplicitPathingPathCost, "useExplicitPathingPathCost", false);
-            Scribe_Values.Look(ref pathingPathCost, "pathingPathCost", 20);
-            Scribe_Values.Look(ref showFlashingPathCost, "showFlashingPathCost", false);
+            Scribe_Values.Look(ref movespeedPathCost, "additionalPathCost", movespeedPathCost);
+            Scribe_Values.Look(ref useExplicitPathingPathCost, "useExplicitPathingPathCost", useExplicitPathingPathCost);
+            Scribe_Values.Look(ref pathingPathCost, "pathingPathCost", pathingPathCost);
+            Scribe_Values.Look(ref showFlashingPathCost, "showFlashingPathCost", showFlashingPathCost);
             base.ExposeData();
         }
     }
