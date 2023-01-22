@@ -30,6 +30,9 @@
             <li>None</li>
         </filthAcceptanceMask>
         <holdSnow>false</holdSnow>
+        <researchPrerequisites>
+            <li>MicroelectronicsBasics</li>
+        </researchPrerequisites>
     </TerrainDef>
 
     <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">

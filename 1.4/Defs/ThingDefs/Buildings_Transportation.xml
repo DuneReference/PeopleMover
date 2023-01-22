@@ -139,6 +139,9 @@
                 <drawSize>(1, 1)</drawSize>
             </blueprintGraphicData>
         </building>
+        <researchPrerequisites>
+            <li>MicroelectronicsBasics</li>
+        </researchPrerequisites>
     </ThingDef>
 
 </Defs>
