@@ -69,7 +69,7 @@
         </building>
     </ThingDef> -->
 
-    <ThingDef>
+    <ThingDef ParentName="BuildingBase">
         <defName>DuneRef_PeopleMover_PowerHub</defName>
         <label>People Mover Power Hub</label>
         <!-- <description>Move People, but faster. This is a hub that you can connect the various directional PeopleMover terrains to. Much better for performance when used in large numbers compared to the building version. but also doesn't transmit power along itself.</description> -->
@@ -81,20 +81,10 @@
             <drawRotated>true</drawRotated>
             <drawSize>(1, 1)</drawSize>
         </graphicData>
-        <category>Building</category>
-        <thingClass>Building</thingClass>
         <altitudeLayer>Building</altitudeLayer>
-        <soundImpactDefault>BulletImpact_Metal</soundImpactDefault>
         <canOverlapZones>false</canOverlapZones>
         <constructEffect>ConstructMetal</constructEffect>
-        <selectable>true</selectable>
-        <drawerType>MapMeshAndRealTime</drawerType>
-        <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
-        <repairEffect>Repair</repairEffect>
-        <leaveResourcesWhenKilled>true</leaveResourcesWhenKilled>
-        <filthLeaving>Filth_RubbleBuilding</filthLeaving>
         <statBases>
-            <SellPriceFactor>0.70</SellPriceFactor>
             <Beauty>-0.5</Beauty>
             <Mass>10</Mass>
             <Flammability>0.4</Flammability>

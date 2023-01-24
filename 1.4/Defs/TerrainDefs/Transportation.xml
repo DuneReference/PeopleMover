@@ -5,22 +5,17 @@
         <defName>DuneRef_PeopleMover_Terrain</defName>
     </DesignatorDropdownGroupDef>
 
-    <TerrainDef Name="DuneRef_PeopleMover_Terrain_Base" Abstract="True">
+    <TerrainDef Name="DuneRef_PeopleMover_Terrain_Base" ParentName="FloorBase" Abstract="True">
         <description>Move People, but faster. Must be connected adjacently to a PeopleMover Power Hub to be active. Tip: Use right click on this architect menu option for more directional variants.</description>
         <designatorDropdown>DuneRef_PeopleMover_Terrain</designatorDropdown>
-        <fertility>0.0</fertility>
         <edgeType>Hard</edgeType>
-        <layerable>true</layerable>
         <constructEffect>ConstructMetal</constructEffect>
-        <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
-        <altitudeLayer>Building</altitudeLayer>
         <statBases>
             <Beauty>-0.5</Beauty>
             <Mass>10</Mass>
             <WorkToBuild>2000</WorkToBuild>
             <Flammability>0</Flammability>
         </statBases>
-        <designationCategory>Floors</designationCategory>
         <costList>
             <Steel>8</Steel>
         </costList>
