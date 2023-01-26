@@ -10,6 +10,7 @@
         <designatorDropdown>DuneRef_PeopleMover_Terrain</designatorDropdown>
         <edgeType>Hard</edgeType>
         <constructEffect>ConstructMetal</constructEffect>
+        <renderPrecedence>399</renderPrecedence>
         <statBases>
             <Beauty>-0.5</Beauty>
             <Mass>10</Mass>
