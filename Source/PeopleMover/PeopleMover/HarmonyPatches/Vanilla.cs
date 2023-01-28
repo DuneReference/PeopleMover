@@ -447,7 +447,8 @@ namespace DuneRef_PeopleMover
                             rotation = Rot4.West;
                         }
 
-                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, dest.Cell, pawn.Position, "ChangePathCostForMover_Terrain");
+                        IntVec3 terrainCell = pawn.Map.cellIndices.IndexToCell(mapIndex);
+                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, terrainCell, pawn.Position, "ChangePathCostForMover_Terrain");
                     }
                 }
             }
