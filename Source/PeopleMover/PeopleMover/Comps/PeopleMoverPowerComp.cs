@@ -5,7 +5,8 @@ namespace DuneRef_PeopleMover
 {
     public class PeopleMoverPowerComp : CompPowerTrader
     {
-        public float desiredPowerOutput = 10f;
+        static public float modSettingsHubPowerOutput = (float)PeopleMoverSettings.wattageHub;
+        public float desiredPowerOutput = modSettingsHubPowerOutput;
 
         public override void CompTick()
         {

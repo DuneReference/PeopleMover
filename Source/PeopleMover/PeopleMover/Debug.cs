@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
 using Verse;
+using static RimWorld.ColonistBar;
 
 namespace DuneRef_PeopleMover
 {
@@ -16,12 +17,16 @@ namespace DuneRef_PeopleMover
         {
             var networksCache = Find.CurrentMap.GetComponent<PeopleMoverMapComp>().networksCache;
 
+            // Log.Message($"[DebugAction] Printing networksCache");
+
             for (int i = 0; i < networksCache.Count; i++)
             {
                 var network = networksCache[i];
+                // Log.Message($"[DebugAction] network {i}");
 
                 for (int j = 0; j < network.Count; j++)
                 {
+                    // Log.Message($"[DebugAction] network {i}, cell {network[j].cell}, isHub? {network[j].isHub}");
                     Find.CurrentMap.debugDrawer.FlashCell(network[j].cell, 50, $"Net {i}", 100);
                 }
             }

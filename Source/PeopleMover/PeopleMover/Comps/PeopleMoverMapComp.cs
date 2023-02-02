@@ -101,7 +101,7 @@ namespace DuneRef_PeopleMover
             bool addedNewCell = false;
             int networkWereUsing = -1;
 
-            if (getNetwork(newCell) == -1)
+            if (GetNetwork(newCell) == -1)
             {
                 /*
                  * If it's a hub, add a new network
@@ -111,6 +111,7 @@ namespace DuneRef_PeopleMover
                 {
                     List<NetworkItem> newNetwork = new List<NetworkItem>();
                     NetworkItem newNetworkItem = new NetworkItem(newCell, networksCache.Count, isHub, map.edificeGrid[map.cellIndices.CellToIndex(newCell)].GetComp<PeopleMoverPowerComp>());
+                    newNetworkItem.powerComp.UpdateDesiredPowerOutput((float)PeopleMoverSettings.wattageHub);
                     newNetwork.Add(newNetworkItem);
                     
                     // used for adj iterations
@@ -132,7 +133,7 @@ namespace DuneRef_PeopleMover
                         if (adjCell.GetTerrain(map).defName.Contains("DuneRef_PeopleMover_Terrain") || (map.edificeGrid[map.cellIndices.CellToIndex(adjCell)] != null && map.edificeGrid[map.cellIndices.CellToIndex(adjCell)].def.defName.Contains("DuneRef_PeopleMover_PowerHub")))
                         {
 
-                            int networkCellIsIn = getNetwork(adjCell);
+                            int networkCellIsIn = GetNetwork(adjCell);
 
                             if (networkCellIsIn != -1)
                             {
@@ -148,7 +149,8 @@ namespace DuneRef_PeopleMover
                                 // update power on hub
                                 // Log.Message($"[RegisterSingleMover] adding power output for mover; cell: {newCell}, isHub {isHub}");
                                 PeopleMoverPowerComp powerComp = networksHubCache[networkCellIsIn].powerComp;
-                                powerComp.UpdateDesiredPowerOutput(powerComp.desiredPowerOutput + 10f);
+                                // Log.Message($"[RegisterSingleMover] setting power output to {powerComp.desiredPowerOutput} + {PeopleMoverSettings.wattagePerTerrain} = {powerComp.desiredPowerOutput + PeopleMoverSettings.wattagePerTerrain}");
+                                powerComp.UpdateDesiredPowerOutput(powerComp.desiredPowerOutput + PeopleMoverSettings.wattagePerTerrain);
 
                                 addedNewCell = true;
                             }
@@ -176,10 +178,10 @@ namespace DuneRef_PeopleMover
             {
                 if (isHub)
                 {
-                    ClearNetwork(networksCache[networkItem.network]);
+                    ClearNetwork(networksCache[networkItem.network], networkItem.network);
                 } else
                 {
-                    IntVec3 hubCell = ClearNetwork(networksCache[networkItem.network]);
+                    IntVec3 hubCell = ClearNetwork(networksCache[networkItem.network], networkItem.network);
                     ReregisterNetwork(hubCell);
                 }
             }
@@ -200,7 +202,7 @@ namespace DuneRef_PeopleMover
         /*
          * Clear hashmap and network list, and return the hubcell in case of reregistering the network.
          */
-        public IntVec3 ClearNetwork(List<NetworkItem> network)
+        public IntVec3 ClearNetwork(List<NetworkItem> network, int networkId)
         {
             // Log.Message($"[ClearNetwork] Clearing network...");
             IntVec3 hubCell = new IntVec3(-1, -1, -1);
@@ -215,21 +217,56 @@ namespace DuneRef_PeopleMover
                     // Reset power consumption for hub
                     // Log.Message($"[ClearNetwork] reseting power output for mover; cell: {hubCell}, isHub {networkItem.isHub}");
                     PeopleMoverPowerComp powerComp = networkItem.powerComp;
-                    powerComp.UpdateDesiredPowerOutput(10f);
+                    // Log.Message($"[ClearNetwork] setting power output to {PeopleMoverSettings.wattageHub}");
+                    powerComp.UpdateDesiredPowerOutput((float)PeopleMoverSettings.wattageHub);
                 }
 
                 cellHashMap.Remove(networkItem.cell);
             }
 
-            network.Clear();
+            networksCache.RemoveAt(networkId);
 
             return hubCell;
         }
 
         /*
+         * Recalculates the wattage for a network. Used when saving mod settings.
+         */
+        public void ReapplyNetworksWattage(int networkId = -1)
+        {
+            if (networkId == -1)
+            {
+                for (int i = 0; i < networksCache.Count; i++)
+                {
+                    ReapplyNetworkWattage(i);
+                }
+            } else
+            {
+                ReapplyNetworkWattage(networkId);
+            }
+        }
+
+        public void ReapplyNetworkWattage(int networkId)
+        {
+            if (networksCache[networkId] != null)
+            {
+                // Log.Message($"[ReapplyNetworksWattage] network: {networkId}");
+                List<NetworkItem> network = networksCache[networkId];
+                NetworkItem hub = networksHubCache[networkId];
+
+                // Log.Message($"[ReapplyNetworkWattage] setting power output to {(float)PeopleMoverSettings.wattageHub} + ({(float)PeopleMoverSettings.wattagePerTerrain} * ({network.Count} - 1)) = {(float)PeopleMoverSettings.wattageHub + ((float)PeopleMoverSettings.wattagePerTerrain * (network.Count - 1))}");
+                hub.powerComp.UpdateDesiredPowerOutput((float)PeopleMoverSettings.wattageHub + ((float)PeopleMoverSettings.wattagePerTerrain * (network.Count - 1)));
+            }
+            else
+            {
+                Log.Message($"[ReapplyNetworksWattage] networksCache {networkId} was found to be null, skipping.");
+            }
+        }
+
+        /*
          * Searches Hash map of cells to see if it's in a network.
          */
-        public int getNetwork(IntVec3 cellToCheck)
+        public int GetNetwork(IntVec3 cellToCheck)
         {
             int networkCellIsIn = -1;
             NetworkItem networkItem;
@@ -249,7 +286,7 @@ namespace DuneRef_PeopleMover
         {
             bool powered = false;
 
-            int networkIndex = getNetwork(CellToCheck);
+            int networkIndex = GetNetwork(CellToCheck);
 
             if (networkIndex != -1)
             {

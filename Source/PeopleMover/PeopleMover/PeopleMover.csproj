@@ -68,6 +68,7 @@
     <Compile Include="PlaceWorker\Textures.cs" />
     <Compile Include="PlaceWorker\PlaceWorker_Arrow.cs" />
     <Compile Include="Debug.cs" />
+    <Compile Include="PeopleMover_DefOf.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
