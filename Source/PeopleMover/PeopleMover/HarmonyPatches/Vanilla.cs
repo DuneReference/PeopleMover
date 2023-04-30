@@ -424,7 +424,7 @@ namespace DuneRef_PeopleMover
                 {
                     returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(returningPathCost, building.Rotation, building.Position, pawn.Position, "ChangePathCostForMover_Building");
                 }
-            } else
+            } else if (pawn != null)
             {
                 TerrainDef terrain = pawn.Map.terrainGrid.topGrid[mapIndex];
 
