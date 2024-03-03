@@ -1,4 +1,6 @@
 ﻿using RimWorld;
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using Verse;
 using static RimWorld.ColonistBar;
@@ -17,7 +19,7 @@ namespace DuneRef_PeopleMover
         {
             var networksCache = Find.CurrentMap.GetComponent<PeopleMoverMapComp>().networksCache;
 
-            // Log.Message($"[DebugAction] Printing networksCache");
+            Log.Message($"[DebugAction] Printing networksCache");
 
             for (int i = 0; i < networksCache.Count; i++)
             {
@@ -42,6 +44,19 @@ namespace DuneRef_PeopleMover
             foreach (KeyValuePair<int, NetworkItem> entry in networksHubCache)
             {
                 Log.Message($"[DebugAction] network {entry.Key}, cell {entry.Value.cell}, isHub? {entry.Value.isHub}");
+            }
+        }
+
+        [DebugAction("PeopleMover", null, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        public static void PrintMapCompCache()
+        {
+            var mapCompCache = VanillaPatches.mapsCompCache;
+
+            Log.Message($"[DebugAction] Printing just mapCompCache");
+
+            foreach (KeyValuePair<int, PeopleMoverMapComp> kvp in mapCompCache)
+            {
+                Log.Message($"Key: {kvp.Key}, Value: {kvp.Value}");
             }
         }
     }

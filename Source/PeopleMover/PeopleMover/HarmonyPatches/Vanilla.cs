@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Verse.AI;
 using System.Reflection;
+using Verse.Profile;
 
 namespace DuneRef_PeopleMover
 {
@@ -56,10 +57,11 @@ namespace DuneRef_PeopleMover
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), prefix: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetworkPrefix)));
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), postfix: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetworkPostfix)));
 
-
             /* Patch in my new PeopleMoverPowerComp into ConnectToPower */
             Harm.Patch(AccessTools.Method(typeof(ThingDef), "get_ConnectToPower"), postfix: new HarmonyMethod(patchType, nameof(AddPowerCompToConnectionListPostfix)));
 
+            /* Patch to clear mapcache on going to main menu or loading */
+            Harm.Patch(AccessTools.Method(typeof(MemoryUtility), nameof(MemoryUtility.ClearAllMapsAndWorld)), postfix: new HarmonyMethod(patchType, nameof(ClearAllMapsAndWorldPostfix)));
         }
 
         /* Utility functions */
@@ -547,6 +549,13 @@ namespace DuneRef_PeopleMover
                     }
                 }
             }
+        }
+   
+        /* Clear Cache Patch */
+
+        public static void ClearAllMapsAndWorldPostfix()
+        {
+            mapsCompCache.Clear();
         }
     }
 
