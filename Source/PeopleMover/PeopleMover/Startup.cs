@@ -1,8 +1,5 @@
 ﻿using Verse;
 using UnityEngine;
-using System.Collections.Generic;
-using System;
-using RimWorld;
 
 namespace DuneRef_PeopleMover
 {

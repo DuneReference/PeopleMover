@@ -5,7 +5,6 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Verse.AI;
-using System.Reflection;
 using Verse.Profile;
 
 namespace DuneRef_PeopleMover
@@ -65,11 +64,11 @@ namespace DuneRef_PeopleMover
         }
 
         /* Utility functions */
-        public static int GetPathCostFromBuildingRotVsPawnDir(int defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
+        public static float GetPathCostFromBuildingRotVsPawnDir(float defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
         {
-            int returningPathCost = defaultCost;
+            float returningPathCost = defaultCost;
 
-            int costIncrement = (!forMoveSpeed && PeopleMoverSettings.useExplicitPathingPathCost) == true ? PeopleMoverSettings.pathingPathCost : 20;
+            float costIncrement = (!forMoveSpeed && PeopleMoverSettings.useExplicitPathingPathCost) == true ? PeopleMoverSettings.pathingPathCost : 20f;
 
             if (buildingRotation == Rot4.North)
             {
@@ -269,21 +268,23 @@ namespace DuneRef_PeopleMover
             try
             {
                 CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_0069: ldloc.1
+                    // IL_006a: ldloc.1
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_1),
-                    // IL_006a: brfalse.s IL_0076
+                    // IL_006b: brfalse.s IL_0078
                     new CodeMatch(i => i.opcode == OpCodes.Brfalse_S),
-                    // IL_006c: ldloc.0
+                    // IL_006d: ldloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_0),
-                    // IL_006d: ldloc.1
+                    // IL_006e: ldloc.1
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_1),
-                    // IL_006e: ldarg.0
+                    // IL_006f: ldarg.0
                     new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_006f: callvirt instance uint16 Verse.Building::PathWalkCostFor(class Verse.Pawn)
+                    // IL_0070: callvirt instance uint16 Verse.Building::PathWalkCostFor(class Verse.Pawn)
                     new CodeMatch(i => i.opcode == OpCodes.Callvirt),
-                    // IL_0074: add
+                    // IL_0075: conv.r4
+                    new CodeMatch(i => i.opcode == OpCodes.Conv_R4),
+                    // IL_0076: add
                     new CodeMatch(i => i.opcode == OpCodes.Add),
-                    // IL_0075: stloc.0
+                    // IL_0077: stloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Stloc_0)
                 };
 
@@ -291,7 +292,7 @@ namespace DuneRef_PeopleMover
                     .Start()
                     .MatchStartForward(desiredInstructions)
                     .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .RemoveInstructions(7)
+                    .RemoveInstructions(8)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_0))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_1))
@@ -310,17 +311,17 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static int ChangePathCostInEdificeSectionFn(int currentPathCost, Building building, Pawn pawn, IntVec3 newCell)
+        public static float ChangePathCostInEdificeSectionFn(float currentPathCost, Building building, Pawn pawn, IntVec3 newCell)
         {
-            int returningPathCost = currentPathCost;
+            float returningPathCost = currentPathCost;
 
             if (building != null) 
             {
                 if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
                 {
-                    int pathCost = PeopleMoverSettings.movespeedPathCost;
+                    float pathCost = PeopleMoverSettings.movespeedPathCost;
 
-                    returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(pathCost, building.Rotation, newCell, pawn.Position, "ChangePathCostInEdificeSection", true);
+                    returningPathCost = GetPathCostFromBuildingRotVsPawnDir(pathCost, building.Rotation, newCell, pawn.Position, "ChangePathCostInEdificeSection", true);
                 }
                 else
                 {
@@ -334,7 +335,7 @@ namespace DuneRef_PeopleMover
                 {
                     if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(newCell, pawn.Map))
                     {
-                        int pathCost = PeopleMoverSettings.movespeedPathCost;
+                        float pathCost = PeopleMoverSettings.movespeedPathCost;
 
                         Rot4 rotation = Rot4.North;
 
@@ -394,11 +395,11 @@ namespace DuneRef_PeopleMover
                     .MatchStartForward(desiredInstructions)
                     .ThrowIfInvalid("Couldn't find the desired instructions")
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 48))
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 46))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 45))
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 43))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 53))
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 51))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_0))
                     .Advance(1)
@@ -406,7 +407,7 @@ namespace DuneRef_PeopleMover
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostForMoverFn))))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Stloc_S, 48))
+                    .Insert(new CodeInstruction(OpCodes.Stloc_S, 46))
                     .InstructionEnumeration();
             }
             catch (Exception ex)
@@ -416,9 +417,9 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static int ChangePathCostForMoverFn(int pathCost, int mapIndex, Building building, Pawn pawn, LocalTargetInfo dest)
+        public static float ChangePathCostForMoverFn(float pathCost, int mapIndex, Building building, Pawn pawn, LocalTargetInfo dest)
         {
-            int returningPathCost = pathCost;
+            float returningPathCost = pathCost;
 
             if (building != null)
             {
@@ -455,7 +456,7 @@ namespace DuneRef_PeopleMover
                 }
             }
 
-            return returningPathCost < 0 ? 0 : returningPathCost;
+            return returningPathCost < 0f ? 0f : returningPathCost;
         }
 
         public static IEnumerable<CodeInstruction> PrintPathFinderInfo(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

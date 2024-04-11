@@ -1,9 +1,6 @@
-﻿using RimWorld;
-using System.Collections;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
-using static RimWorld.ColonistBar;
+using LudeonTK;
 
 namespace DuneRef_PeopleMover
 {
