@@ -71,6 +71,8 @@ namespace DuneRef_PeopleMover
 
             int costIncrement = (!forMoveSpeed && PeopleMoverSettings.useExplicitPathingPathCost) == true ? PeopleMoverSettings.pathingPathCost : 20;
 
+            if (PeopleMoverSettings.omniMover) return returningPathCost - costIncrement;
+
             if (buildingRotation == Rot4.North)
             {
                 if (prevCell.z <= newCell.z)
