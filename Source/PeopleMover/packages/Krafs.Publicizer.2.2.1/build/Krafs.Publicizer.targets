@@ -7,6 +7,7 @@
     </ItemGroup>
 
     <PublicizeAssemblies
+      LogFilePath="$(PublicizerLogFilePath)"
       ReferencePaths="@(ReferencePath)"
       Publicizes="@(Publicize)"
       DoNotPublicizes="@(DoNotPublicize)"
@@ -44,6 +45,10 @@
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+  </Target>
+
+  <Target Name="PublicizerClean" BeforeTargets="Clean" Condition="$(PublicizerClearCacheOnClean)">
+    <RemoveDir Directories="$(IntermediateOutputPath)PublicizedAssemblies" />
   </Target>
 
 </Project>

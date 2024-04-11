@@ -1,14 +1,3 @@
-# Publicizer
-Publicizer is an MSBuild plugin that allows direct access to private members in .NET-assemblies.
-
-## Installation
-Use your IDE's package manager and add [Krafs.Publicizer](https://www.nuget.org/packages/Krafs.Publicizer) from nuget.org.
-
-Or add via the dotnet CLI:
-```bash
-dotnet add package Krafs.Publicizer
-```
-
 ## Usage
 Publicizer needs to be told what private members you want access to. You do this by defining _Publicize_-items in your project file.
 
@@ -40,6 +29,26 @@ You can use this shorthand property to publicize **all** assemblies referenced b
 ```
 
 Save the project file and the changes should take effect shortly. If not, try performing a _Restore_.
+
+### Diagnostics
+Publicizer logs to MSBuild. However, for convenience it is also possible to log to a custom log file by setting:
+```xml
+<PropertyGroup>
+    <PublicizerLogFilePath>path/to/logfile</PublicizerLogFilePath>
+</PropertyGroup>
+```
+If the file does not exist it will be created.
+
+The file is overwritten on every execution.
+
+### Clean
+You can instruct Publicizer to clear its cache everytime the project is cleaned:
+```xml
+<PropertyGroup>
+    <PublicizerClearCacheOnClean>true</PublicizerClearCacheOnClean>
+</PropertyGroup>
+```
+This is mostly useful when troubleshooting Publicizer and you want logs to publicize on every rebuild instead of using the cached assemblies.
 
 ## How Publicizer works
 There are two obstacles with accessing private members - the compiler and the runtime. 
