@@ -127,6 +127,8 @@ namespace DuneRef_PeopleMover
 
         public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(IntVec3 cell, Map map)
         {
+            //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::IsMapIndexApartOfPeopleMoverPowerHubNetwork : map was null"); return false; }
+
             if (mapsCompCache.TryGetValue(map.uniqueID, out PeopleMoverMapComp mapComp))
             {
                 return mapComp.IsCellsNetworkPowered(cell);
@@ -180,7 +182,11 @@ namespace DuneRef_PeopleMover
         {
             int returningPathCost = buildingPathCost > terrainPathCost ? buildingPathCost : terrainPathCost;
 
-            if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.TryGetComp<PeopleMoverPowerComp>().PowerOn)
+            // if (building == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInRepeaterSectionFn : building was null"); return returningPathCost; }
+            Def def = building.def;
+            // if (def == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInRepeaterSectionFn : def was null"); return returningPathCost; }
+
+            if ((def.defName == "DuneRef_PeopleMover" || def.defName == "DuneRef_PeopleMover_PowerHub") && building.TryGetComp<PeopleMoverPowerComp>().PowerOn)
             {
                 if (buildingPathCost < terrainPathCost)
                 {
@@ -243,7 +249,10 @@ namespace DuneRef_PeopleMover
 
             if (building != null)
             {
-                if (building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub")
+                Def def = building.def;
+                //if (def == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInSnowSectionFn : def was null"); return returningPathCost; }
+
+                if (def.defName == "DuneRef_PeopleMover" || def.defName == "DuneRef_PeopleMover_PowerHub")
                 {
                     if (building.TryGetComp<PeopleMoverPowerComp>().PowerOn)
                     {
@@ -252,9 +261,15 @@ namespace DuneRef_PeopleMover
                 }
             } else
             {
+                //if (terrain == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInSnowSectionFn : terrain was null"); return returningPathCost; }
+
                 if (terrain.defName == "DuneRef_PeopleMover_Terrain")
                 {
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(nextCell, pathGrid.map))
+                    //if (pathGrid == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInSnowSectionFn : pathGrid was null"); return returningPathCost; }
+                    Map map = pathGrid.map;
+                    //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInSnowSectionFn : map was null"); return returningPathCost; }
+
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(nextCell, map))
                     {
                         returningPathCost = runningPathCost;
                     }
@@ -317,9 +332,14 @@ namespace DuneRef_PeopleMover
         {
             float returningPathCost = currentPathCost;
 
+            //if (pawn == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInEdificeSectionFn : pawn was null"); return returningPathCost; }
+
             if (building != null) 
             {
-                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
+                Def def = building.def;
+                //if (def == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInEdificeSectionFn : def was null"); return returningPathCost; }
+
+                if ((def.defName == "DuneRef_PeopleMover" || def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
                 {
                     float pathCost = PeopleMoverSettings.movespeedPathCost;
 
@@ -331,11 +351,16 @@ namespace DuneRef_PeopleMover
                 }
             } else
             {
-                TerrainDef terrain = pawn.Map.terrainGrid.TerrainAt(newCell);
+                Map map = pawn.Map;
+                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInEdificeSectionFn : map was null"); return returningPathCost; }
+                TerrainGrid terrainGrid = map.terrainGrid;
+                //if (terrainGrid == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostInEdificeSectionFn : terrainGrid was null"); return returningPathCost; }
+
+                TerrainDef terrain = terrainGrid.TerrainAt(newCell);
 
                 if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
                 {
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(newCell, pawn.Map))
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(newCell, map))
                     {
                         float pathCost = PeopleMoverSettings.movespeedPathCost;
 
@@ -425,17 +450,31 @@ namespace DuneRef_PeopleMover
 
             if (building != null)
             {
-                if ((building.def.defName == "DuneRef_PeopleMover" || building.def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
+                Def def = building.def;
+                //if (def == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : def was null"); return returningPathCost; }
+
+                if ((def.defName == "DuneRef_PeopleMover" || def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
                 {
+                    //if (pawn == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : pawn was null"); return returningPathCost; }
+
                     returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(returningPathCost, building.Rotation, building.Position, pawn.Position, "ChangePathCostForMover_Building");
                 }
             } else if (pawn != null)
             {
-                TerrainDef terrain = pawn.Map.terrainGrid.topGrid[mapIndex];
+                Map map = pawn.Map;
+                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : map was null"); return returningPathCost; }
+                TerrainGrid terrainGrid = map.terrainGrid;
+                //if (terrainGrid == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : terrainGrid was null"); return returningPathCost; }
+                //if (mapIndex >= terrainGrid.topGrid.Length) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : mapIndex >= terrainGrid.topGrid.Length"); return returningPathCost; }
+                TerrainDef terrain = terrainGrid.topGrid[mapIndex];
+                //if (terrain == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : terrain was null"); return returningPathCost; }
 
                 if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
                 {
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(pawn.Map.cellIndices.IndexToCell(mapIndex), pawn.Map))
+                    CellIndices cellIndices = map.cellIndices;
+                    //if (cellIndices == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : cellIndices was null"); return returningPathCost; }
+
+                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(cellIndices.IndexToCell(mapIndex), map))
                     {
                         Rot4 rotation = Rot4.North;
 
@@ -452,7 +491,7 @@ namespace DuneRef_PeopleMover
                             rotation = Rot4.West;
                         }
 
-                        IntVec3 terrainCell = pawn.Map.cellIndices.IndexToCell(mapIndex);
+                        IntVec3 terrainCell = cellIndices.IndexToCell(mapIndex);
                         returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, terrainCell, pawn.Position, "ChangePathCostForMover_Terrain");
                     }
                 }
@@ -508,16 +547,29 @@ namespace DuneRef_PeopleMover
         {
             if (PeopleMoverSettings.showFlashingPathCost)
             {
-                pawn.Map.debugDrawer.FlashCell(pawn.Map.cellIndices.IndexToCell(mapIndex), knownCost, knownCost.ToString());
-            }
+                if (pawn == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : Pawn was null"); return; }
+                Map map = pawn.Map;
+                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : Map was null"); return; }
+                DebugCellDrawer debugDrawer = map.debugDrawer;
+                //if (debugDrawer == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : debugDrawer was null"); return; }
+                CellIndices cellIndices = map.cellIndices;
+                //if (cellIndices == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : cellIndices was null"); return; }
+
+                debugDrawer.FlashCell(cellIndices.IndexToCell(mapIndex), knownCost, knownCost.ToString());
+            } 
         }
 
         /* Terrain Patches */
         public static void AddNewTerrainToNetworkPostfix(IntVec3 c, TerrainDef newTerr, TerrainGrid __instance)
         {
+            //if (newTerr == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::AddNewTerrainToNetworkPostfix : newTerr was null"); return; }
+
             if (newTerr.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
-                __instance.map.GetComponent<PeopleMoverMapComp>().RegisterMover(c);
+                //if (__instance == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::AddNewTerrainToNetworkPostfix : __instance was null"); return; }
+                Map map = __instance.map;
+                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::AddNewTerrainToNetworkPostfix : map was null"); return; }
+                map.GetComponent<PeopleMoverMapComp>().RegisterMover(c);
             }
         }
 
@@ -532,9 +584,15 @@ namespace DuneRef_PeopleMover
 
         public static void RemoveTerrainFromNetworkPostfix(IntVec3 c, TerrainGrid __instance, TerrainState __state)
         {
-            if (__state.underTerrainDef != null && __state.terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
+            //if (__state == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::RemoveTerrainFromNetworkPostfix : __state was null"); return; }
+            TerrainDef terrainDef = __state.terrainDef;
+            //if (terrainDef == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::RemoveTerrainFromNetworkPostfix : terrainDef was null"); return; }
+
+            if (__state.underTerrainDef != null && terrainDef.defName.Contains("DuneRef_PeopleMover_Terrain"))
             {
-                __instance.map.GetComponent<PeopleMoverMapComp>().DeregisterMover(c);
+                Map map = __instance.map;
+                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::RemoveTerrainFromNetworkPostfix : map was null"); return; }
+                map.GetComponent<PeopleMoverMapComp>().DeregisterMover(c);
             }
         }
 
@@ -542,11 +600,16 @@ namespace DuneRef_PeopleMover
 
         public static void AddPowerCompToConnectionListPostfix(ref bool __result, ThingDef __instance)
         {
-            if(__result != true && !__instance.EverTransmitsPower)
+            //if (__instance == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::AddPowerCompToConnectionListPostfix : __instance was null"); return; }
+
+            if (__result != true && !__instance.EverTransmitsPower)
             {
                 for (int i = 0; i < __instance.comps.Count; i++)
                 {
-                    if (__instance.comps[i].compClass == typeof(PeopleMoverPowerComp))
+                    CompProperties comp = __instance.comps[i];
+                    //if (comp == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::AddPowerCompToConnectionListPostfix : comp was null"); return; }
+
+                    if (comp.compClass == typeof(PeopleMoverPowerComp))
                     {
                         __result = true;
                     }
@@ -558,6 +621,7 @@ namespace DuneRef_PeopleMover
 
         public static void ClearAllMapsAndWorldPostfix()
         {
+            //if (mapsCompCache == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ClearAllMapsAndWorldPostfix : mapsCompCache was null"); return; }
             mapsCompCache.Clear();
         }
     }
