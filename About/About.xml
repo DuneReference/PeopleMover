@@ -4,8 +4,9 @@
     <author>Dune Reference</author>
     <packageId>DuneReference.PeopleMover</packageId>
     <supportedVersions>
-		<li>1.4</li>
-    <li>1.5</li>
+      <li>1.4</li>
+      <li>1.5</li>
+      <li>1.6</li>
     </supportedVersions>
     <loadAfter>
     </loadAfter>
