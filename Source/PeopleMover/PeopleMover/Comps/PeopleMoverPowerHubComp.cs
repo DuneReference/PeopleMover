@@ -21,9 +21,9 @@ namespace DuneRef_PeopleMover
             mapComp.RegisterMover(cell, true);
         }
 
-        public override void PostDeSpawn(Map map)
+        public override void PostDeSpawn(Map map, DestroyMode destroyMode)
         {
-            base.PostDeSpawn(map);
+            base.PostDeSpawn(map, destroyMode);
 
             /*
              * When hubs are removed, their network is destroyed
