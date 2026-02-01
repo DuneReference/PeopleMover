@@ -22,7 +22,7 @@ namespace DuneRef_PeopleMover
             // Patch CalculatedCostAt to allow PeopleMover's pathcost to make tiles pathcost lower than terrain's pathcost.
             // this is used as an entry level pathCost calculator which the game caches. updated on game load and terrain change.
             Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInRepeaterSection)));
-            Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInSnowSection)));
+            Harm.Patch(AccessTools.Method(typeof(PathGrid), "CalculatedCostAt"), transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInSnowSandSection)));
 
             // Patch CostToMoveIntoCell for changing speed of pawn on the mover
             Harm.Patch(
@@ -214,32 +214,53 @@ namespace DuneRef_PeopleMover
             return returningPathCost;
         }
 
-        public static IEnumerable<CodeInstruction> ChangePathCostInSnowSection(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        public static IEnumerable<CodeInstruction> ChangePathCostInSnowSandSection(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
+            /* 
+             * The code in the disassembly looks like this: 
+             * // I've replaced "num" with "currentPathCost", "num2" with "snowPathCost" and "num3" with "sandPathCost" here for clarity of what it is representing.
+             *   int currentPathCost = terrainDef.pathCost;
+	         *   int snowPathCost = WeatherBuildupUtility.MovementTicksAddOn(this.map.snowGrid.GetCategory(c));
+	         *   if (snowPathCost > currentPathCost)
+	         *   {
+		     *       currentPathCost = snowPathCost;
+	         *   }
+	         *   if (ModsConfig.OdysseyActive)
+	         *   {
+		     *       int sandPathCost = WeatherBuildupUtility.MovementTicksAddOn(this.map.sandGrid.GetCategory(c));
+		     *       if (sandPathCost > currentPathCost)
+		     *       {
+			 *           currentPathCost = sandPathCost;
+		     *       }
+	         *   }
+             *   
+             *   We're replacing the assignments in both the snow and sand parts with the same assignments its already doing normally, 
+             *   but if it's our building/terrain and its powered we want to ignore them.
+             */
             try
             {
                 CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_011b: callvirt instance valuetype Verse.SnowCategory Verse.SnowGrid::GetCategory(valuetype Verse.IntVec3)
+                    // IL_0182: callvirt instance valuetype Verse.WeatherBuildupCategory Verse.SnowGrid::GetCategory(valuetype Verse.IntVec3)
                     new CodeMatch(i => i.opcode == OpCodes.Callvirt),
-                    // IL_0120: call int32 Verse.SnowUtility::MovementTicksAddOn(valuetype Verse.SnowCategory)
+                    // IL_0187: call int32 Verse.WeatherBuildupUtility::MovementTicksAddOn(valuetype Verse.WeatherBuildupCategory)
                     new CodeMatch(i => i.opcode == OpCodes.Call),
-                    // IL_0125: stloc.s 4
+                    // IL_018c: stloc.s 4
                     new CodeMatch(i => i.opcode == OpCodes.Stloc_S),
-                    // IL_0127: ldloc.s 4
+                    // IL_018e: ldloc.s 4
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_0129: ldloc.0
+                    // IL_0190: ldloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_0),
-                    // IL_012a: ble.s IL_012f
+                    // IL_0191: ble.s IL_0196
                     new CodeMatch(i => i.opcode == OpCodes.Ble_S),
-                    // IL_012c: ldloc.s 4
+                    // IL_0193: ldloc.s 4
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_S)
                 };
 
                 return new CodeMatcher(instructions, generator)
                     .Start()
                     .MatchEndForward(desiredInstructions)
-                    .Advance(1)
                     .ThrowIfInvalid("Couldn't find the desired instructions")
+                    .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_0))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_S, 6))
@@ -250,7 +271,20 @@ namespace DuneRef_PeopleMover
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldarg_1))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostInSnowSectionFn))))
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostInSnowSandSectionFn))))
+                    // now that we've handled the snow portion, let's head to the sand portion.
+                    .Advance(15)
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 6))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 2))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldarg_0))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Ldarg_1))
+                    .Advance(1)
+                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostInSnowSandSectionFn))))
                     .InstructionEnumeration();
             }
             catch (Exception ex)
@@ -260,9 +294,9 @@ namespace DuneRef_PeopleMover
             }
         }
 
-        public static int ChangePathCostInSnowSectionFn(int snowPathCost, int runningPathCost, Thing building, TerrainDef terrain, PathGrid pathGrid, IntVec3 nextCell)
+        public static int ChangePathCostInSnowSandSectionFn(int snowSandPathCost, int runningPathCost, Thing building, TerrainDef terrain, PathGrid pathGrid, IntVec3 nextCell)
         {
-            int returningPathCost = snowPathCost;
+            int returningPathCost = snowSandPathCost;
 
             if (building != null)
             {
