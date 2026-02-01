@@ -142,21 +142,37 @@ namespace DuneRef_PeopleMover
         /* CalculatedCostAt */
         public static IEnumerable<CodeInstruction> ChangePathCostInRepeaterSection(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
+            /*
+             * The code in the disassembly looks like this: 
+             *  if (!PathGrid.IsPathCostIgnoreRepeater(thing.def) || !prevCell.IsValid || !this.ContainsPathCostIgnoreRepeater(prevCell))
+             *  {
+             *      int pathCost = thing.def.pathCost;
+             *      if (pathCost > num) // num is terrainDef.pathCost
+             *      {
+             *          num = pathCost;
+             *      }
+             *  }
+             *  
+             *  We are removing the if(pathCost > num)... if statement and replacing it in its entirety.
+             *  In our replacement function we maintain this logic--if the building pathCost is higher than the terrain's use the building's.
+             *  However, we add in that if it's the PeopleMover and the power is on then if the pathCost of the building pathCost is LOWER than the
+             *  terrain's then we use that lower value. Bypassing the fact vanilla can't have a lower pathcost than the terrain's pathcost.
+            */
             try
             {
                 CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_00c8: ble.s IL_00cd
+                    // IL_011d: ble.s IL_0122
                     new CodeMatch(i => i.opcode == OpCodes.Ble_S),
-                    // IL_00ca: ldloc.s 7
+                    // IL_011f: ldloc.s 9
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_00cc: stloc.0
+                    // IL_0121: stloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Stloc_0),
-                    // IL_00cd: ldloc.s 6
+                    // IL_0122: ldloc.s 6
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_00cf: isinst RimWorld.Building_Door
+                    // IL_0124: isinst RimWorld.Building_Door
                     new CodeMatch(i => i.opcode == OpCodes.Isinst),
-                    // IL_00d4: brfalse.s IL_00fc
-                    new CodeMatch(i => i.opcode == OpCodes.Brfalse_S),
+                    // IL_0129: stloc.s 7
+                    new CodeMatch(i => i.opcode == OpCodes.Stloc_S),
                 };
 
                 return new CodeMatcher(instructions, generator)
