@@ -333,26 +333,37 @@ namespace DuneRef_PeopleMover
         /* CostToMoveIntoCell */
         public static IEnumerable<CodeInstruction> ChangePathCostInEdificeSection(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
+            /* 
+             * The code in the disassembly looks like this: 
+             * // I've replaced "num" with "currentPathCost" and "edifice" with "building" here for clarity of what it is representing.
+             *   	if (building != null)
+	         *      {
+		     *          currentPathCost += (float)building.PathWalkCostFor(pawn);
+	         *      }
+             *   
+             *   We're replacing this whole if statement with our own logic which allows us to modify the pathCost based on the directionality
+             *   of the pawn in relation to the direction the movers are going.
+             */
             try
             {
                 CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_006a: ldloc.1
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_1),
-                    // IL_006b: brfalse.s IL_0078
+                    // IL_0073: ldloc.2
+                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_2),
+                    // IL_0074: brfalse.s IL_0081
                     new CodeMatch(i => i.opcode == OpCodes.Brfalse_S),
-                    // IL_006d: ldloc.0
+                    // IL_0076: ldloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Ldloc_0),
-                    // IL_006e: ldloc.1
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_1),
-                    // IL_006f: ldarg.0
+                    // IL_0077: ldloc.2
+                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_2),
+                    // IL_0078: ldarg.0
                     new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_0070: callvirt instance uint16 Verse.Building::PathWalkCostFor(class Verse.Pawn)
+                    // IL_0079: callvirt instance uint16 Verse.Building::PathWalkCostFor(class Verse.Pawn)
                     new CodeMatch(i => i.opcode == OpCodes.Callvirt),
-                    // IL_0075: conv.r4
+                    // IL_007e: conv.r4
                     new CodeMatch(i => i.opcode == OpCodes.Conv_R4),
-                    // IL_0076: add
+                    // IL_007f: add
                     new CodeMatch(i => i.opcode == OpCodes.Add),
-                    // IL_0077: stloc.0
+                    // IL_0080: stloc.0
                     new CodeMatch(i => i.opcode == OpCodes.Stloc_0)
                 };
 
@@ -363,7 +374,7 @@ namespace DuneRef_PeopleMover
                     .RemoveInstructions(8)
                     .Insert(new CodeInstruction(OpCodes.Ldloc_0))
                     .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_1))
+                    .Insert(new CodeInstruction(OpCodes.Ldloc_2))
                     .Advance(1)
                     .Insert(new CodeInstruction(OpCodes.Ldarg_0))
                     .Advance(1)
