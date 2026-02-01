@@ -144,16 +144,17 @@ namespace DuneRef_PeopleMover
         {
             /*
              * The code in the disassembly looks like this: 
+             *  // I've replaced "num" with "currentPathCost" here for clarity of what it is representing.
              *  if (!PathGrid.IsPathCostIgnoreRepeater(thing.def) || !prevCell.IsValid || !this.ContainsPathCostIgnoreRepeater(prevCell))
              *  {
-             *      int pathCost = thing.def.pathCost;
-             *      if (pathCost > num) // num is terrainDef.pathCost
+             *      int pathCost = thing.def.pathCost; // the thing we're on top of
+             *      if (pathCost > currentPathCost)
              *      {
-             *          num = pathCost;
+             *          currentPathCost = pathCost;
              *      }
              *  }
              *  
-             *  We are removing the if(pathCost > num)... if statement and replacing it in its entirety.
+             *  We are removing the if(pathCost > currentPathCost)... if statement and replacing it in its entirety.
              *  In our replacement function we maintain this logic--if the building pathCost is higher than the terrain's use the building's.
              *  However, we add in that if it's the PeopleMover and the power is on then if the pathCost of the building pathCost is LOWER than the
              *  terrain's then we use that lower value. Bypassing the fact vanilla can't have a lower pathcost than the terrain's pathcost.
