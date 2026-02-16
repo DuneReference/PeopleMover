@@ -8,7 +8,7 @@ namespace DuneRef_PeopleMover
     {
         static DuneRef_Textures()
         {
-            Arrow = ContentFinder<Texture2D>.Get("Things/Buildings/PeopleMover/PlaceWorker_Arrow", true);
+            Arrow = ContentFinder<Texture2D>.Get("Things/Buildings/PeopleMover/PlaceWorker_MultiDirectional_Arrow", true);
         }
 
         public static readonly Texture2D Arrow;

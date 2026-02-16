@@ -32,31 +32,17 @@
     </TerrainDef>
 
     <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
-        <defName>DuneRef_PeopleMover_Terrain_North</defName>
-        <label>People Mover - Terrain (North)</label>
-        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_North</uiIconPath>
-        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_North</texturePath>
+        <defName>DuneRef_PeopleMover_Terrain_Vertical</defName>
+        <label>People Mover - Terrain (Vertical)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMover_MultiDirectional_Icon_Terrain_Vertical</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_MultiDirectional_Arrow_1024x1024_Terrain_Vertical</texturePath>
     </TerrainDef>
 
     <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
-        <defName>DuneRef_PeopleMover_Terrain_East</defName>
-        <label>People Mover - Terrain (East)</label>
-        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_East</uiIconPath>
-        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_East</texturePath>
-    </TerrainDef>
-
-    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
-        <defName>DuneRef_PeopleMover_Terrain_South</defName>
-        <label>People Mover - Terrain (South)</label>
-        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_South</uiIconPath>
-        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_South</texturePath>
-    </TerrainDef>
-
-    <TerrainDef ParentName="DuneRef_PeopleMover_Terrain_Base">
-        <defName>DuneRef_PeopleMover_Terrain_West</defName>
-        <label>People Mover - Terrain (West)</label>
-        <uiIconPath>Things/Buildings/PeopleMover/PeopleMoverIcon_Terrain_West</uiIconPath>
-        <texturePath>Things/Buildings/PeopleMover/PeopleMover_Arrow_1024x1024_Terrain_West</texturePath>
+        <defName>DuneRef_PeopleMover_Terrain_Horizontal</defName>
+        <label>People Mover - Terrain (Horizontal)</label>
+        <uiIconPath>Things/Buildings/PeopleMover/PeopleMover_MultiDirectional_Icon_Terrain_Horizontal</uiIconPath>
+        <texturePath>Things/Buildings/PeopleMover/PeopleMover_MultiDirectional_Arrow_1024x1024_Terrain_Horizontal</texturePath>
     </TerrainDef>
 
 </Defs>

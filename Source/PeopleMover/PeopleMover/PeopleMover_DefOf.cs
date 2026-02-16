@@ -7,9 +7,7 @@ namespace DuneRef_PeopleMover
     public class PeopleMover_DefOf
     {
         public static ThingDef DuneRef_PeopleMover_PowerHub;
-        public static TerrainDef DuneRef_PeopleMover_Terrain_North;
-        public static TerrainDef DuneRef_PeopleMover_Terrain_East;
-        public static TerrainDef DuneRef_PeopleMover_Terrain_South;
-        public static TerrainDef DuneRef_PeopleMover_Terrain_West;
+        public static TerrainDef DuneRef_PeopleMover_Terrain_Vertical;
+        public static TerrainDef DuneRef_PeopleMover_Terrain_Horizontal;
     }
 }
