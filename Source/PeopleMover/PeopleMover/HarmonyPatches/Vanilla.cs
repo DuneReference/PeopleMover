@@ -33,24 +33,6 @@ namespace DuneRef_PeopleMover
                 ), 
                 transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostInEdificeSection)));
 
-            // Patch PathFinder to prioritize moving on correct direction movers, and do the opposite when not the correct direction.
-            Harm.Patch(
-                AccessTools.Method(
-                    typeof(PathFinder),
-                    "FindPath",
-                    new Type[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) }
-                ),
-                transpiler: new HarmonyMethod(patchType, nameof(ChangePathCostForMover)));
-
-            // Shows the red debug boxes.
-            Harm.Patch(
-                AccessTools.Method(
-                    typeof(PathFinder),
-                    "FindPath",
-                    new Type[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) }
-                ),
-                transpiler: new HarmonyMethod(patchType, nameof(PrintPathFinderInfo)));
-
             /* Patch SetTerrain to add/remove movers to network */
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "SetTerrain"), postfix: new HarmonyMethod(patchType, nameof(AddNewTerrainToNetworkPostfix)));
             Harm.Patch(AccessTools.Method(typeof(TerrainGrid), "RemoveTopLayer"), prefix: new HarmonyMethod(patchType, nameof(RemoveTerrainFromNetworkPrefix)));
@@ -64,65 +46,13 @@ namespace DuneRef_PeopleMover
         }
 
         /* Utility functions */
-        public static float GetPathCostFromBuildingRotVsPawnDir(float defaultCost, Rot4 buildingRotation, IntVec3 newCell, IntVec3 prevCell, string methodName, bool forMoveSpeed = false)
+        public static float GetPathCost(float defaultCost)
         {
             float returningPathCost = defaultCost;
 
-            float costIncrement = (!forMoveSpeed && PeopleMoverSettings.useExplicitPathingPathCost) == true ? PeopleMoverSettings.pathingPathCost : 20f;
+            float costIncrement = 20f;
 
-            if (PeopleMoverSettings.omniMover) return returningPathCost - costIncrement;
-
-            if (buildingRotation == Rot4.North)
-            {
-                if (prevCell.z <= newCell.z)
-                {
-                    returningPathCost -= costIncrement;
-                }
-                else
-                {
-                    returningPathCost += costIncrement;
-                }
-            }
-            else if (buildingRotation == Rot4.East)
-            {
-                if (prevCell.x <= newCell.x)
-                {
-                    returningPathCost -= costIncrement;
-                }
-                else
-                {
-                    returningPathCost += costIncrement;
-                }
-            }
-            else if (buildingRotation == Rot4.South)
-            {
-                if (prevCell.z >= newCell.z)
-                {
-                    returningPathCost -= costIncrement;
-                }
-                else
-                {
-                    returningPathCost += costIncrement;
-                }
-            }
-            else if (buildingRotation == Rot4.West)
-            {
-                if (prevCell.x >= newCell.x)
-                {
-                    returningPathCost -= costIncrement;
-                }
-                else
-                {
-                    returningPathCost += costIncrement;
-                }
-            }
-            else
-            {
-                Log.Message($"[{methodName}] None of them? This shouldn't happen. rotation: {buildingRotation}, Coords: prevCell {prevCell.x},?,{prevCell.z} - newCell {newCell.x},?,{newCell.z}");
-                return returningPathCost;
-            }
-
-            return returningPathCost;
+            return returningPathCost - costIncrement;
         }
 
         public static bool IsMapIndexApartOfPeopleMoverPowerHubNetwork(IntVec3 cell, Map map)
@@ -405,7 +335,7 @@ namespace DuneRef_PeopleMover
                 {
                     float pathCost = PeopleMoverSettings.movespeedPathCost;
 
-                    returningPathCost = GetPathCostFromBuildingRotVsPawnDir(pathCost, building.Rotation, newCell, pawn.Position, "ChangePathCostInEdificeSection", true);
+                    returningPathCost = GetPathCost(pathCost);
                 }
                 else
                 {
@@ -426,199 +356,12 @@ namespace DuneRef_PeopleMover
                     {
                         float pathCost = PeopleMoverSettings.movespeedPathCost;
 
-                        Rot4 rotation = Rot4.North;
-
-                        if (terrain.defName.Contains("East"))
-                        {
-                            rotation = Rot4.East;
-                        }
-                        else if (terrain.defName.Contains("South"))
-                        {
-                            rotation = Rot4.South;
-                        }
-                        else if (terrain.defName.Contains("West"))
-                        {
-                            rotation = Rot4.West;
-                        }
-
-                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(pathCost, rotation, newCell, pawn.Position, "ChangePathCostInEdificeSection", true);
+                        returningPathCost = GetPathCost(pathCost);
                     }
                 }
             }
 
             return returningPathCost;
-        }
-
-        /* PathFinder */
-        public static IEnumerable<CodeInstruction> ChangePathCostForMover(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            try
-            {
-                CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_08d2: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_09f3: ldfld class [mscorlib]System.Collections.Generic.List`1<class ['Assembly-CSharp']RimWorld.Blueprint>[] ['Assembly-CSharp']Verse.AI.PathFinder::blueprintGrid
-                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
-                    // IL_09f8: ldloc.s 45
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_09fa: ldelem.ref
-                    new CodeMatch(i => i.opcode == OpCodes.Ldelem_Ref),
-                    // IL_09fb: stloc.s 55
-                    new CodeMatch(i => i.opcode == OpCodes.Stloc_S),
-                    // IL_09fd: ldloc.s 55
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_09ff: brfalse IL_0a6a
-                    new CodeMatch(i => i.opcode == OpCodes.Brfalse_S),
-                    // IL_0a04: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_0a05: ldstr "Blueprints"
-                    new CodeMatch(i => i.opcode == OpCodes.Ldstr),
-                    // IL_0a0a: call instance void ['Assembly-CSharp']Verse.AI.PathFinder::PfProfilerBeginSample(string)
-                    new CodeMatch(i => i.opcode == OpCodes.Call),
-                    // IL_0a0f: ldc.i4.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldc_I4_0)
-                };
-
-                return new CodeMatcher(instructions, generator)
-                    .Start()
-                    .MatchStartForward(desiredInstructions)
-                    .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 46))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 43))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 51))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldarg_2))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.ChangePathCostForMoverFn))))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Stloc_S, 46))
-                    .InstructionEnumeration();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[DuneRef_PeopleMover] : {ex}");
-                return instructions;
-            }
-        }
-
-        public static float ChangePathCostForMoverFn(float pathCost, int mapIndex, Building building, Pawn pawn, LocalTargetInfo dest)
-        {
-            float returningPathCost = pathCost;
-
-            if (building != null)
-            {
-                Def def = building.def;
-                //if (def == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : def was null"); return returningPathCost; }
-
-                if ((def.defName == "DuneRef_PeopleMover" || def.defName == "DuneRef_PeopleMover_PowerHub") && building.GetComp<PeopleMoverPowerComp>().PowerOn)
-                {
-                    //if (pawn == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : pawn was null"); return returningPathCost; }
-
-                    returningPathCost =  GetPathCostFromBuildingRotVsPawnDir(returningPathCost, building.Rotation, building.Position, pawn.Position, "ChangePathCostForMover_Building");
-                }
-            } else if (pawn != null)
-            {
-                Map map = pawn.Map;
-                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : map was null"); return returningPathCost; }
-                TerrainGrid terrainGrid = map.terrainGrid;
-                //if (terrainGrid == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : terrainGrid was null"); return returningPathCost; }
-                //if (mapIndex >= terrainGrid.topGrid.Length) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : mapIndex >= terrainGrid.topGrid.Length"); return returningPathCost; }
-                TerrainDef terrain = terrainGrid.topGrid[mapIndex];
-                //if (terrain == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : terrain was null"); return returningPathCost; }
-
-                if (terrain.defName.Contains("DuneRef_PeopleMover_Terrain"))
-                {
-                    CellIndices cellIndices = map.cellIndices;
-                    //if (cellIndices == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::ChangePathCostForMoverFn : cellIndices was null"); return returningPathCost; }
-
-                    if (IsMapIndexApartOfPeopleMoverPowerHubNetwork(cellIndices.IndexToCell(mapIndex), map))
-                    {
-                        Rot4 rotation = Rot4.North;
-
-                        if (terrain.defName.Contains("East"))
-                        {
-                            rotation = Rot4.East;
-                        }
-                        else if (terrain.defName.Contains("South"))
-                        {
-                            rotation = Rot4.South;
-                        }
-                        else if (terrain.defName.Contains("West"))
-                        {
-                            rotation = Rot4.West;
-                        }
-
-                        IntVec3 terrainCell = cellIndices.IndexToCell(mapIndex);
-                        returningPathCost = GetPathCostFromBuildingRotVsPawnDir(returningPathCost, rotation, terrainCell, pawn.Position, "ChangePathCostForMover_Terrain");
-                    }
-                }
-            }
-
-            return returningPathCost < 0f ? 0f : returningPathCost;
-        }
-
-        public static IEnumerable<CodeInstruction> PrintPathFinderInfo(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            try
-            {
-                CodeMatch[] desiredInstructions = new CodeMatch[]{
-                    // IL_0bcf: add
-                    new CodeMatch(i => i.opcode == OpCodes.Add),
-                    // IL_0bd0: stloc.s 15
-                    new CodeMatch(i => i.opcode == OpCodes.Stloc_S),
-                    // IL_0bd2: ldarg.0
-                    new CodeMatch(i => i.opcode == OpCodes.Ldarg_0),
-                    // IL_0bd3: ldfld class System.Collections.Generic.PriorityQueue`2<int32, int32> Verse.AI.PathFinder::openList
-                    new CodeMatch(i => i.opcode == OpCodes.Ldfld),
-                    // IL_0bd8: ldloc.s 45
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_0bda: ldloc.s 51
-                    new CodeMatch(i => i.opcode == OpCodes.Ldloc_S),
-                    // IL_0bdc: callvirt instance void class System.Collections.Generic.PriorityQueue`2<int32, int32>::Enqueue(!0, !1)
-                    new CodeMatch(i => i.opcode == OpCodes.Callvirt)
-
-                };
-
-                return new CodeMatcher(instructions, generator)
-                    .Start()
-                    .MatchEndForward(desiredInstructions)
-                    .ThrowIfInvalid("Couldn't find the desired instructions")
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 43))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_S, 47))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Ldloc_0))
-                    .Advance(1)
-                    .Insert(new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(VanillaPatches.PrintPathFinderInfoFn))))
-                    .InstructionEnumeration();
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[DuneRef_PeopleMover] : {ex}");
-                return instructions;
-            }
-        }
-
-        public static void PrintPathFinderInfoFn(int mapIndex, int knownCost, Pawn pawn)
-        {
-            if (PeopleMoverSettings.showFlashingPathCost)
-            {
-                if (pawn == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : Pawn was null"); return; }
-                Map map = pawn.Map;
-                //if (map == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : Map was null"); return; }
-                DebugCellDrawer debugDrawer = map.debugDrawer;
-                //if (debugDrawer == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : debugDrawer was null"); return; }
-                CellIndices cellIndices = map.cellIndices;
-                //if (cellIndices == null) { Log.Warning($"[DuneRef_PeopleMover] VanillaPatches::PrintPathFinderInfoFn : cellIndices was null"); return; }
-
-                debugDrawer.FlashCell(cellIndices.IndexToCell(mapIndex), knownCost, knownCost.ToString());
-            } 
         }
 
         /* Terrain Patches */

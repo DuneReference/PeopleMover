@@ -24,20 +24,6 @@ namespace DuneRef_PeopleMover
         public static int wattageHub = 10;
         public static int defaultWattageHub = 10;
 
-        // pathcost
-        public static bool useExplicitPathingPathCost = false;
-        public static bool defaultUseExplicitPathingPathCost = false;
-
-        public static int pathingPathCost = 20;
-        public static int defaultPathingPathCost = 20;
-
-        // omni mover for if you want the directions disabled.
-        public static bool omniMover = false;
-        public static bool defaultOmniMover = false;
-
-        // debug
-        public static bool showFlashingPathCost = false;
-
         public override void ExposeData()
         {
             // movespeed
@@ -47,15 +33,6 @@ namespace DuneRef_PeopleMover
             Scribe_Values.Look(ref wattagePerTerrain, "wattagePerTerrain", defaultWattagePerTerrain);
             Scribe_Values.Look(ref wattageHub, "wattageHub", defaultWattageHub);
             
-            // pathcost
-            Scribe_Values.Look(ref useExplicitPathingPathCost, "useExplicitPathingPathCost", defaultUseExplicitPathingPathCost);
-            Scribe_Values.Look(ref pathingPathCost, "pathingPathCost", defaultPathingPathCost);
-
-            // omni mover
-            Scribe_Values.Look(ref omniMover, "omniMover", defaultOmniMover);
-
-            // debug
-            Scribe_Values.Look(ref showFlashingPathCost, "showFlashingPathCost", showFlashingPathCost);
             base.ExposeData();
         }
     }
@@ -88,19 +65,6 @@ namespace DuneRef_PeopleMover
             listingStandard.Label($"{PeopleMoverSettings.wattageHub}");
             PeopleMoverSettings.wattageHub = (int)listingStandard.Slider(PeopleMoverSettings.wattageHub, 0f, 100f);
 
-            // pathcost
-            listingStandard.Label("Advanced:");
-            listingStandard.CheckboxLabeled($"Explicitly specify the pathCost increment of the mover. (Mod Default: {PeopleMoverSettings.defaultPathingPathCost})", ref PeopleMoverSettings.useExplicitPathingPathCost, "How much pawns prioritize/deprioritize walking on movers depending in direction.");
-            listingStandard.Label($"{PeopleMoverSettings.pathingPathCost}");
-            PeopleMoverSettings.pathingPathCost = (int)listingStandard.Slider(PeopleMoverSettings.pathingPathCost, -50f, 100f);
-
-            // omnimover
-            listingStandard.Label("Functionality:");
-            listingStandard.CheckboxLabeled("Omni Mover - Movers don't care what direction you're going.", ref PeopleMoverSettings.omniMover);
-
-            // debug
-            listingStandard.Label("Dev:");
-            listingStandard.CheckboxLabeled("Show flashing pathCost cells.", ref PeopleMoverSettings.showFlashingPathCost);
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }
