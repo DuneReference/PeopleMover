@@ -83,9 +83,20 @@ namespace DuneRef_PeopleMover
 
         public void RecalculateWattages()
         {
+            
+            if (Current.Game?.Maps == null) return;
+
             foreach (Map map in Find.Maps)
             {
-                map.GetComponent<PeopleMoverMapComp>().ReapplyNetworksWattage();
+                if (map != null)
+                {
+                    PeopleMoverMapComp peopleMoverMapComp = map.GetComponent<PeopleMoverMapComp>();
+
+                    if (peopleMoverMapComp != null)
+                    {
+                        map.GetComponent<PeopleMoverMapComp>().ReapplyNetworksWattage();
+                    }
+                }
             }
         }
     }
